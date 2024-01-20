@@ -1,0 +1,34 @@
+{
+  "name": "@lstudio/core",
+  "version": "0.2.1",
+  "source": "src/index.ts",
+  "main": "dist/umd/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dev": "rollup --config node:@lstudio/rollup-config --watch",
+    "build": "rollup --config node:@lstudio/rollup-config --environment NODE_ENV:production",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.3",
+    "@types/recordrtc": "^5.6.14",
+    "@lstudio/eslint-config": "workspace:*",
+    "@lstudio/rollup-config": "workspace:*",
+    "@lstudio/tsconfig": "workspace:*",
+    "typescript": "^4.9.4"
+  },
+  "rollup": {
+    "name": "LStudio Core"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "events": "^3.3.0",
+    "recordrtc": "^5.6.2"
+  }
+}
