@@ -1,0 +1,13 @@
+{
+  "extends": "@lstudio/tsconfig/base.json",
+  "display": "@lstudio/socket-bridge",
+  "compilerOptions": {
+    "module": "ESNext",
+    "isolatedModules": false,
+    "moduleResolution": "Node",
+    "target": "ES2019",
+    "declaration": true,
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}
