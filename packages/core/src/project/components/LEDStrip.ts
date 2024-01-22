@@ -1,4 +1,4 @@
-import { Color } from './Color'
+import { Color } from '../../utils/Color'
 
 export enum LEDStripModel {
   WS2815 = 'WS2815'

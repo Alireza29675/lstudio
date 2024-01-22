@@ -1,20 +1,31 @@
-import { LEDStrip } from './LEDStrip'
+import { Mod } from "./Mod";
+import { Setup } from "./Setup";
 
-export class LEDStripChain {
-  constructor(
-    readonly strips: LEDStrip[],
-    readonly pin: number
-  ) {}
-}
+export class Project<ClockData, ModName extends string = ''> {
+  private currentMod: ModName
 
-export class LEDSetup {
   constructor(
-    readonly chains: LEDStripChain[]
-  ) {}
-}
+    readonly setup: Setup,
+    readonly mods: Record<ModName, Mod<ClockData>>
+  ) {
+    const modNames = Object.keys(mods);
+    
+    if (!modNames.length) {
+      console.warn('You must have at least one mod for this project.');
+    }
 
-export class Project {
-  constructor(
-    readonly setup: LEDSetup
-  ) {}
+    this.currentMod = (modNames[0] || '') as ModName
+  }
+
+  get mod (): Mod<ClockData> {
+    return this.mods[this.currentMod]
+  }
+
+  set mod(name: ModName) {
+    this.currentMod = name;
+  }
+
+  tick(data: ClockData): void {
+    this.mod.update(this.setup, data);
+  }
 }
