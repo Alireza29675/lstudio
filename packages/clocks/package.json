@@ -1,5 +1,5 @@
 {
-  "name": "@projects/template",
+  "name": "@lstudio/clocks",
   "version": "0.0.0",
   "source": "src/index.ts",
   "main": "dist/umd/index.js",
@@ -16,11 +16,14 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^18.19.3",
     "@lstudio/core": "workspace:*",
+    "@types/node": "^18.19.3",
     "@lstudio/eslint-config": "workspace:*",
     "@lstudio/rollup-config": "workspace:*",
     "@lstudio/tsconfig": "workspace:*",
     "typescript": "^4.9.4"
+  },
+  "rollup": {
+    "name": "LStudio Clocks"
   }
 }

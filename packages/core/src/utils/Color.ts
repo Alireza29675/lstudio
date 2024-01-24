@@ -10,6 +10,11 @@ export class Color {
   private b: number;
 
   constructor(color: `#${string}` | RGB) {
+    if (typeof color === 'string' && color.length === 4) {
+      const [, r, g, b] = color
+      color = `#${r.repeat(2)}${g.repeat(2)}${b.repeat(2)}`
+    }
+
     if (typeof color === 'string') {
       this.r = parseInt(color.slice(1, 3), 16);
       this.g = parseInt(color.slice(3, 5), 16);

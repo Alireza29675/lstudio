@@ -48,4 +48,10 @@ export class LEDStrip {
       b: this._data[startIndex + 2],
     }
   }
+
+  fill(color: Color) {
+    for (let index = 0; index < this.count; index++) {
+      this.setIndex(index, color)
+    }
+  }
 }

@@ -1,3 +1,4 @@
 export * from "./project";
 export { Clock } from "./Clock"
-export { Renderer } from "./Renderer"
+export { Color } from "./utils/Color";
+export { Ouput } from "./Output"

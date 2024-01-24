@@ -51,6 +51,27 @@ importers:
         specifier: ^4.9.4
         version: 4.9.5
 
+  packages/clocks:
+    devDependencies:
+      '@lstudio/core':
+        specifier: workspace:*
+        version: link:../core
+      '@lstudio/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint-config
+      '@lstudio/rollup-config':
+        specifier: workspace:*
+        version: link:../../tooling/rollup-config
+      '@lstudio/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/tsconfig
+      '@types/node':
+        specifier: ^18.19.3
+        version: 18.19.3
+      typescript:
+        specifier: ^4.9.4
+        version: 4.9.5
+
   packages/core:
     devDependencies:
       '@lstudio/eslint-config':
@@ -81,6 +102,9 @@ importers:
       '@lstudio/core':
         specifier: workspace:*
         version: link:../core
+      '@projects/hightechmess':
+        specifier: workspace:*
+        version: link:../../projects/hightechmess
       '@types/react':
         specifier: ^18.2.43
         version: 18.2.48
@@ -135,6 +159,9 @@ importers:
 
   projects/hightechmess:
     devDependencies:
+      '@lstudio/clocks':
+        specifier: workspace:*
+        version: link:../../packages/clocks
       '@lstudio/core':
         specifier: workspace:*
         version: link:../../packages/core

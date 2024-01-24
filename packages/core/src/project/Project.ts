@@ -18,6 +18,10 @@ export class Project<ClockData, ModName extends string = ''> {
   }
 
   getMod(): Mod<ClockData> {
+    if (!this.mods[this.currentMod]) {
+      throw new Error('You should define at least one mod for your project')
+    }
+
     return this.mods[this.currentMod];
   }
 
