@@ -1,0 +1,10 @@
+{
+  "extends": "@lstudio/tsconfig/base.json",
+  "display": "@lstudio/core",
+  "compilerOptions": {
+    "declaration": true,
+    "lib": ["dom"],
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

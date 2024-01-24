@@ -1,2 +1,2 @@
-export { LEDStrip } from "./LEDStrip";
+export { LEDStrip, LEDStripModel } from "./LEDStrip";
 export { LEDStripChain } from "./LEDStripChain";

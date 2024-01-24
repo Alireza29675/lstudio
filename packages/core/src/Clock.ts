@@ -4,10 +4,6 @@ type UnsubscribeFn = () => void
 export abstract class Clock<T> {
   private subscribers: ClockSubscribeFn<T>[] = []
 
-  constructor() {
-    this.init();
-  }
-
   public subscribe(fn: ClockSubscribeFn<T>): UnsubscribeFn {
     this.subscribers.push(fn)
 
@@ -18,6 +14,4 @@ export abstract class Clock<T> {
   protected tick(data: T) {
     this.subscribers.forEach(fn => fn(data))
   }
-
-  protected abstract init(): void
 }
