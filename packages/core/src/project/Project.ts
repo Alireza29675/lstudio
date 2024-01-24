@@ -17,15 +17,15 @@ export class Project<ClockData, ModName extends string = ''> {
     this.currentMod = (modNames[0] || '') as ModName
   }
 
-  get mod (): Mod<ClockData> {
-    return this.mods[this.currentMod]
+  getMod(): Mod<ClockData> {
+    return this.mods[this.currentMod];
   }
 
-  set mod(name: ModName) {
+  setMod(name: ModName) {
     this.currentMod = name;
   }
 
   tick(data: ClockData): void {
-    this.mod.update(this.setup, data);
+    this.getMod().update(this.setup, data);
   }
 }

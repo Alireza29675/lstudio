@@ -1,3 +1,3 @@
 export * from "./project";
 export { Clock } from "./Clock"
-export { Display } from "./Display"
+export { Renderer } from "./Renderer"

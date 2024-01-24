@@ -1,7 +1,7 @@
 import { Clock } from "./Clock";
 import { Project } from "./project";
 
-export abstract class Display<ClockData = null> {
+export abstract class Renderer<ClockData = null> {
   constructor(
     readonly project: Project<ClockData>,
     readonly clock: Clock<ClockData>

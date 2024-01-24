@@ -1,5 +1,5 @@
 {
-  "name": "@lstudio/core",
+  "name": "@projects/template",
   "version": "0.0.0",
   "source": "src/index.ts",
   "main": "dist/umd/index.js",
@@ -17,12 +17,10 @@
   },
   "devDependencies": {
     "@types/node": "^18.19.3",
+    "@lstudio/core": "workspace:*",
     "@lstudio/eslint-config": "workspace:*",
     "@lstudio/rollup-config": "workspace:*",
     "@lstudio/tsconfig": "workspace:*",
     "typescript": "^4.9.4"
-  },
-  "rollup": {
-    "name": "LStudio Core"
   }
 }
