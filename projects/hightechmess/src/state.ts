@@ -3,5 +3,5 @@ export interface State {
 }
 
 export const initialState: State = {
-  leds: [0, 0, 0]
+  leds: [0, 0, 0],
 }

@@ -30,7 +30,14 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
   }
 
   setMod(name: ModList) {
+    if (name === this.currentMod) return;
+    
     this.currentMod = name;
+    const mod = this.getMod()
+    
+    if (mod.init) {
+      this._state = mod.init(this.state)
+    }
   }
 
   tick(data: C): void {
