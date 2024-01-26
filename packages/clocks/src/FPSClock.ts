@@ -1,8 +1,10 @@
 import { Clock } from '@lstudio/core'
 
-export class FPSClock extends Clock<{
-  frameIndex: number,
-}> {
+export type FPSClockPayloadType = {
+  frameIndex: number
+}
+
+export class FPSClock extends Clock<FPSClockPayloadType> {
   private interval?: NodeJS.Timeout
   private frameCursor: number = 0
 

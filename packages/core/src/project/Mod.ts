@@ -1,5 +1,5 @@
-import { Setup } from "./Setup";
+import { GenericState } from "./types";
 
-export abstract class Mod<ClockData> {
-  abstract update(setup: Setup, data: ClockData): void
+export abstract class Mod<C, S extends GenericState> {
+  abstract update(state: S, clockData: C): S
 }

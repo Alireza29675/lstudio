@@ -24,7 +24,11 @@
     "lib": ["esnext"],
     "target": "esnext",
     "module": "esnext",
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"],
+    }
   },
   "exclude": ["node_modules"]
 }
