@@ -12,11 +12,13 @@ interface IProps {
 const Strip = ({ leds, style }: { leds: Color[], style?: React.CSSProperties }) => {
   return <div className={styles.strip} style={style}>
     {leds.map((led, i) => {
-      const { r, g, b } = led.getRGB();
-    
+      const { r, g, b } = led.getRGB()
+      const color = `rgb(${r}, ${g}, ${b})`
+
       return (
         <div className={styles.stripLed} key={i} style={{
-          background: `rgb(${r}, ${g}, ${b})`
+          background: color,
+          boxShadow: `0 0 100px ${color}`
         }} />
       )
     })}
@@ -25,7 +27,7 @@ const Strip = ({ leds, style }: { leds: Color[], style?: React.CSSProperties }) 
 
 export const WebOutput = ({ project, clock }: IProps) => {
   const state = useOuput(project, clock)
-  const { stripOne, stripTwo, stripThree, stripFour } = state;
+  const { stripOne, stripTwo, stripThree, stripFour } = state
 
   return <div>
     <Strip leds={stripOne} style={{

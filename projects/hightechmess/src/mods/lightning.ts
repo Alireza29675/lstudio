@@ -5,22 +5,24 @@ import { State } from "../state";
 const black = new Color('#222222')
 const white = new Color('#eeeeee')
 
-export class lightningMod implements Mod<ClockPayloadType, State> {
-  update(state: State, { frameIndex }: ClockPayloadType) {
-    const { stripOne, stripTwo, stripThree, stripFour } = state
+const ledMap = (shouldShine: boolean) => () => {
+  // Generate some small noise
+  if (Math.random() < 0.1) return black;
+  return shouldShine ? white : black
+}
 
-    if (frameIndex % 3 !== 0) {
-      return { ...state }
-    }
+export class lightningMod implements Mod<ClockPayloadType, State> {
+  update(state: State) {
+    const { stripOne, stripTwo, stripThree, stripFour } = state
 
     const stripToShine = Math.floor(Math.random() * 4);
 
     return {
       ...state,
-      stripOne: stripOne.fill(stripToShine === 0 ? white : black),
-      stripTwo: stripTwo.fill(stripToShine === 1 ? white : black),
-      stripThree: stripThree.fill(stripToShine === 2 ? white : black),
-      stripFour: stripFour.fill(stripToShine === 3 ? white : black),
+      stripOne: stripOne.map(ledMap(stripToShine === 0)),
+      stripTwo: stripTwo.map(ledMap(stripToShine === 1)),
+      stripThree: stripThree.map(ledMap(stripToShine === 2)),
+      stripFour: stripFour.map(ledMap(stripToShine === 3)),
     }
   }
 }
