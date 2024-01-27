@@ -1,7 +1,15 @@
+import { Color } from "@lstudio/core"
+
 export interface State {
-  leds: number[]
+  stripOne: Color[]
+  stripTwo: Color[]
+  stripThree: Color[]
+  stripFour: Color[]
 }
 
 export const initialState: State = {
-  leds: [0, 0, 0],
+  stripOne: new Array(20).fill(new Color('#000000')),
+  stripTwo: new Array(10).fill(new Color('#000000')),
+  stripThree: new Array(10).fill(new Color('#000000')),
+  stripFour: new Array(20).fill(new Color('#000000')),
 }

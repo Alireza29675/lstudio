@@ -1,7 +1,5 @@
-import { stableMod } from "./stable";
-import { trainMod } from "./train";
+import { lightningMod } from "./lightning";
 
 export const mods = {
-  stable: stableMod,
-  train: trainMod
+  lightning: new lightningMod
 }

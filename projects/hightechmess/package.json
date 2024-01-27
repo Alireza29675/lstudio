@@ -15,8 +15,12 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "react": "^18.2.0"
+  },
   "devDependencies": {
     "@types/node": "^18.19.3",
+    "@types/react": "^18.2.43",
     "@lstudio/core": "workspace:*",
     "@lstudio/clocks": "workspace:*",
     "@lstudio/eslint-config": "workspace:*",
