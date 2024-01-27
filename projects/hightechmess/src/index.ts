@@ -8,6 +8,6 @@ export const project = new Project(initialState, mods)
 
 export const output = createWebOuput({ project, clock })
 
-project.setMod('lightning')
+project.setMod('snake')
 
 clock.start()

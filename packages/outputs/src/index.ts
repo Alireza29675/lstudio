@@ -1,0 +1,1 @@
+export { useOutput } from './web/useOutput'

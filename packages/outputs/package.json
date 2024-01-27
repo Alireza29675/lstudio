@@ -1,5 +1,5 @@
 {
-  "name": "@projects/hightechmess",
+  "name": "@lstudio/outputs",
   "version": "0.0.0",
   "source": "src/index.ts",
   "main": "dist/umd/index.js",
@@ -18,15 +18,19 @@
   "dependencies": {
     "react": "^18.2.0"
   },
+  "peerDependencies": {
+    "react": "*"
+  },
   "devDependencies": {
-    "@types/node": "^18.19.3",
-    "@types/react": "^18.2.43",
     "@lstudio/core": "workspace:*",
-    "@lstudio/clocks": "workspace:*",
-    "@lstudio/outputs": "workspace:*",
     "@lstudio/eslint-config": "workspace:*",
     "@lstudio/rollup-config": "workspace:*",
     "@lstudio/tsconfig": "workspace:*",
+    "@types/node": "^18.19.3",
+    "@types/react": "^18.2.43",
     "typescript": "^4.9.4"
+  },
+  "rollup": {
+    "name": "LStudio Clocks"
   }
 }

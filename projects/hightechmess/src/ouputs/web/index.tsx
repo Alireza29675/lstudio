@@ -1,8 +1,9 @@
 import { Color } from "@lstudio/core"
 import { ClockType, ProjectType } from "./types"
-import { useOuput } from "./useOutput"
+import { useOutput } from "@lstudio/outputs"
 import styles from './styles.module.css'
 import React from "react"
+import { initialState } from "../../state"
 
 interface IProps {
   project: ProjectType
@@ -26,7 +27,7 @@ const Strip = ({ leds, style }: { leds: Color[], style?: React.CSSProperties }) 
 }
 
 export const WebOutput = ({ project, clock }: IProps) => {
-  const state = useOuput(project, clock)
+  const state = useOutput({ project, clock, initialState })
   const { stripOne, stripTwo, stripThree, stripFour } = state
 
   return <div>
