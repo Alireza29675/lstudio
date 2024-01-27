@@ -10,6 +10,7 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
+import postcss from 'rollup-plugin-postcss';
 
 const pkg = JSON.parse(readFileSync(resolve(cwd(), './package.json')));
 const isProd = process.env.NODE_ENV === 'production';
@@ -18,6 +19,10 @@ const defaultPlugins = [
   resolvePlugin(),
   commonjs({
     include: /node_modules/,
+  }),
+  postcss({
+    modules: true, // Enable CSS Modules
+    extensions: ['.css', '.module.css'], // Process these file types
   }),
 ];
 

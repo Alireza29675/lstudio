@@ -1,0 +1,13 @@
+:global(body) {
+  background-color: black;
+}
+
+.stripLed {
+  width: 30px;
+  height: 30px;
+}
+
+.strip {
+  position: absolute;
+  top: 100px;
+}

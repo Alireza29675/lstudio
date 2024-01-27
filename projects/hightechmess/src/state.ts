@@ -8,8 +8,8 @@ export interface State {
 }
 
 export const initialState: State = {
-  stripOne: new Array(20).fill(new Color('#000000')),
-  stripTwo: new Array(10).fill(new Color('#000000')),
-  stripThree: new Array(10).fill(new Color('#000000')),
-  stripFour: new Array(20).fill(new Color('#000000')),
+  stripOne: new Array(30).fill(new Color('#000000')),
+  stripTwo: new Array(20).fill(new Color('#000000')),
+  stripThree: new Array(20).fill(new Color('#000000')),
+  stripFour: new Array(30).fill(new Color('#000000')),
 }

@@ -2,14 +2,14 @@ import { Color, Mod } from "@lstudio/core"
 import { ClockPayloadType } from "../clock";
 import { State } from "../state";
 
-const black = new Color('#000000')
-const white = new Color('#ffffff')
+const black = new Color('#222222')
+const white = new Color('#eeeeee')
 
 export class lightningMod implements Mod<ClockPayloadType, State> {
   update(state: State, { frameIndex }: ClockPayloadType) {
     const { stripOne, stripTwo, stripThree, stripFour } = state
 
-    if (frameIndex % 10 !== 0) {
+    if (frameIndex % 3 !== 0) {
       return { ...state }
     }
 
