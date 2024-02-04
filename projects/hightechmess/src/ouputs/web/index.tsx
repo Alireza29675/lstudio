@@ -28,24 +28,24 @@ const Strip = ({ leds, style }: { leds: Color[], style?: React.CSSProperties }) 
 
 export const WebOutput = ({ project, clock }: IProps) => {
   const state = useOutput({ project, clock, initialState })
-  const { stripOne, stripTwo, stripThree, stripFour } = state
+  const { strips } = state
 
   return <div>
-    <Strip leds={stripOne} style={{
-      left: '20%',
-      transform: 'rotate(-20deg)'
+    <Strip leds={strips[0].leds} style={{
+      left: '25%',
+      transform: `translateY(-50%) rotate(${strips[0].rotation}deg)`
     }} />
-    <Strip leds={stripTwo} style={{
-      left: '30%',
-      transform: 'rotate(-10deg)'
+    <Strip leds={strips[1].leds} style={{
+      left: '43%',
+      transform: `translateY(-50%) rotate(${strips[1].rotation}deg)`
     }} />
-    <Strip leds={stripThree} style={{
-      left: '70%',
-      transform: 'rotate(10deg)'
+    <Strip leds={strips[2].leds} style={{
+      left: '58%',
+      transform: `translateY(-50%) rotate(${strips[2].rotation}deg)`
     }} />
-    <Strip leds={stripFour} style={{
-      left: '80%',
-      transform: 'rotate(20deg)'
+    <Strip leds={strips[3].leds} style={{
+      left: '76%',
+      transform: `translateY(-50%) rotate(${strips[3].rotation}deg)`
     }} />
   </div>
 }

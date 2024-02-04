@@ -1,9 +1,9 @@
 .stripLed {
-  width: 30px;
-  height: 30px;
+  width: 10px;
+  height: 6px;
 }
 
 .strip {
   position: absolute;
-  top: 100px;
+  top: 500px;
 }

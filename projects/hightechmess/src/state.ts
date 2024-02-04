@@ -1,15 +1,29 @@
 import { Color } from "@lstudio/core"
 
 export interface State {
-  stripOne: Color[]
-  stripTwo: Color[]
-  stripThree: Color[]
-  stripFour: Color[]
+  strips: Array<{
+    leds: Color[]
+    rotation: number
+  }>
 }
 
 export const initialState: State = {
-  stripOne: new Array(30).fill(new Color('#000000')),
-  stripTwo: new Array(20).fill(new Color('#000000')),
-  stripThree: new Array(20).fill(new Color('#000000')),
-  stripFour: new Array(30).fill(new Color('#000000')),
+  strips: [
+    {
+      leds: new Array(90).fill(new Color('#000000')),
+      rotation: 90
+    },
+    {
+      leds: new Array(60).fill(new Color('#000000')),
+      rotation: 90
+    },
+    {
+      leds: new Array(60).fill(new Color('#000000')),
+      rotation: 90
+    },
+    {
+      leds: new Array(90).fill(new Color('#000000')),
+      rotation: 90
+    },
+  ]
 }

@@ -1,7 +1,5 @@
-import { lightningMod } from "./lightning";
-import { SnakeMod } from "./snake";
+import { SeaMod } from "./sea"
 
 export const mods = {
-  lightning: new lightningMod,
-  snake: new SnakeMod
+  snake: new SeaMod
 }
