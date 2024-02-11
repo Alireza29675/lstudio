@@ -8,7 +8,7 @@ export class SeaMod implements Mod<ClockPayloadType, State> {
   update(state: State) {
     state.strips.forEach((strip, i) => {
       strip.leds.fill(seaBlue)
-      strip.rotation = 90 + Math.sin(Math.sin((Date.now() / 450) + i)) * 5
+      strip.rotation = 90 + Math.sin(((Date.now() / 700) + i)) * 5
     })
 
     return {
