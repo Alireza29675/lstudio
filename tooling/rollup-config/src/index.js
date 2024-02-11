@@ -46,6 +46,7 @@ export const esmConfig = defineConfig({
   output: {
     file: pkg.module,
     format: 'esm',
+    inlineDynamicImports: true,
   },
   onwarn,
   plugins: [
@@ -65,6 +66,7 @@ export const umdConfig = defineConfig({
   output: {
     file: pkg.main,
     format: 'umd',
+    inlineDynamicImports: true,
     exports: 'named',
     name: pkg.rollup?.name || 'LStudio',
     globals,

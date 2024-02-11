@@ -1,0 +1,13 @@
+{
+  "extends": "@lstudio/tsconfig/base.json",
+  "display": "@lstudio/core",
+  "module": "commonjs", 
+  "target": "ES2016", 
+  "esModuleInterop": true,
+  "compilerOptions": {
+    "declaration": true,
+    "lib": ["dom"],
+  },
+  "include": ["**/*.ts", "**/*.tsx", "src/index.ts"],
+  "exclude": ["node_modules", "dist"]
+}
