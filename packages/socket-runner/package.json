@@ -10,7 +10,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "dev": "rollup --config node:@lstudio/rollup-config --watch",
+    "dev": "rollup --config node:@lstudio/rollup-config --watch | nodemon --watch dist/**/*.js --watch node_modules/@projects/hightechmess/**/*.js --exec 'node dist/umd/index.js'",
     "build": "rollup --config node:@lstudio/rollup-config --environment NODE_ENV:production",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "typecheck": "tsc --noEmit"

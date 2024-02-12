@@ -13,7 +13,6 @@ import json from '@rollup/plugin-json';
 import postcss from 'rollup-plugin-postcss';
 
 const pkg = JSON.parse(readFileSync(resolve(cwd(), './package.json')));
-const isProd = process.env.NODE_ENV === 'production';
 
 const defaultPlugins = [
   resolvePlugin(),
@@ -85,4 +84,4 @@ export const umdConfig = defineConfig({
   ],
 });
 
-export default isProd ? [esmConfig, umdConfig, dtsConfig] : [esmConfig, dtsConfig];
+export default [esmConfig, umdConfig, dtsConfig];
