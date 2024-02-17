@@ -23,13 +23,17 @@ export class SocketOutput extends Ouput<ClockPayloadType, State> {
   render(state: State): void {
     if (!this.ready) return;
 
-    const numbers = state.strips[0].leds.map(c => {
+    const strip = state.strips[1]
+
+    const leds = strip.leds.map(c => {
       const { r, g, b} = c.getRGB()
       return [r, g, b]
     }).flat()
 
+    const data = [...leds, strip.rotation]
+
     // Data might need additional encoding before sending 
-    const buffer = Buffer.from(numbers);
+    const buffer = Buffer.from(data);
     this.ws.send(buffer);
   }
 }
