@@ -5,6 +5,7 @@ import { ClockPayloadType } from "../../clock";
 import { rotateServo } from './commands/rotateServo';
 import { setColorPalette } from './commands/setColorPallete';
 import { setLedColors } from './commands/setLedColors';
+import { setLedBrightness } from './commands/setLedBrightness';
 
 type SocketOutputConstructorArgs = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,9 +48,7 @@ export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
 
   setup(): void {
     this.send(rotateServo(90));
-  }
-
-  render(): void {
+    this.send(setLedBrightness(30))
     this.send(setColorPalette([
       { r: 255, g: 0, b: 0 },
       { r: 0, g: 255, b: 0 },
@@ -58,7 +57,9 @@ export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
       { r: 0, g: 255, b: 255 },
       { r: 255, g: 0, b: 255 },
     ]));
-
-    this.send(setLedColors([0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5]));
+  }
+  
+  render(): void {
+    this.send(setLedColors(new Array(60).fill(Math.floor(Math.random() * 6))));
   }
 }

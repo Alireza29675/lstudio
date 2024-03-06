@@ -1,5 +1,7 @@
 export enum CommandID {
-  ROTATE_SERVO = 0,
-  SET_COLOR_PALETTE = 1,
-  SET_LED_COLORS = 2,
+  ROTATE_SERVO = 1,
+  SET_COLOR_PALETTE = 2,
+  SET_LED_COLORS = 3,
+  FILL_LED = 4,
+  SET_LED_BRIGTHNESS = 5,
 }
