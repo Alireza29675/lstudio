@@ -1,21 +1,16 @@
-import { Color, Mod } from "@lstudio/core"
+import { Color, Mod } from "@lstudio/core";
 import { ClockPayloadType } from "../clock";
 import { State } from "../state";
 
 const black = new Color('#000000')
-const white = new Color('#eeeeee')
+const white = new Color('#ffffff')
 
 export class FlashMod implements Mod<ClockPayloadType, State> {
-  update(state: State) {
+  update(state: State, { frameIndex }: ClockPayloadType) {
     state.strips.forEach(strip => {
-      const { r } = strip.leds[0].getRGB()
+      strip.leds.fill(black) 
 
-
-      strip.rotation += 0.1
-
-      if (r > 100) {
-        strip.leds.fill(black)
-      } else {
+      if (frameIndex % 8 < 3) {
         strip.leds.fill(white)
       }
     })

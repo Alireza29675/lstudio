@@ -10,7 +10,7 @@ let socketOuput: object | null;
 export const getSocketOuput = async () => {
   if (socketOuput) return socketOuput;
   const { SocketOutput } = await import("./ouputs/socket")
-  socketOuput = new SocketOutput({ project, clock, url: 'http://192.168.1.223:81' })
+  socketOuput = new SocketOutput({ project, clock, url: 'http://192.168.1.11:81' })
   return socketOuput
 }
 

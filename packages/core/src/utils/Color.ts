@@ -45,4 +45,20 @@ export class Color {
     this.g = Math.max(0, this.g - amount);
     this.b = Math.max(0, this.b - amount);
   }
+
+  clone(): Color {
+    return new Color(this.getRGB());
+  }
+
+  brightenClone(amount: number): Color {
+    const c = this.clone();
+    c.brighten(amount);
+    return c;
+  }
+
+  darkenClone(amount: number): Color {
+    const c = this.clone();
+    c.darken(amount);
+    return c;
+  }
 }
