@@ -10,6 +10,7 @@
   ],
   "license": "MIT",
   "scripts": {
+    "start": "nodemon --watch dist --exec 'node dist/umd/index.js'",
     "dev": "rollup --config node:@lstudio/rollup-config --watch",
     "build": "rollup --config node:@lstudio/rollup-config --environment NODE_ENV:production",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
@@ -29,6 +30,7 @@
     "@lstudio/tsconfig": "workspace:*",
     "@types/node": "^18.19.3",
     "@types/react": "^18.2.43",
+    "nodemon": "^3.1.0",
     "typescript": "^4.9.4"
   }
 }

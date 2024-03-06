@@ -99,7 +99,7 @@ export class SocketOutput extends Ouput<ClockPayloadType, State> {
       rotateServo(this.ws!, 90);
       setBrushColors(this.ws!, [
         [0, 0, 0],
-        [255, 0, 0],
+        [255, 255, 0],
         [0, 0, 0],
         [0, 0, 0],
         [0, 0, 0],

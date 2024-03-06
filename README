@@ -1,0 +1,6 @@
+# How to run
+
+1. Install [pnpm](https://pnpm.io/)
+2. Run `pnpm install`
+3. Run `pnpm dev` and keep it running
+4. Change directory to `projects/[project-name]` and run `pnpm start` to start the project
