@@ -2,11 +2,11 @@ import { Project } from "@lstudio/core";
 import { initialState } from "./state";
 import { clock } from "./clock";
 import { mods } from "./mods";
-import { SocketOutput } from "./ouputs/socket";
+import { OctaCoreOutput } from "./ouputs/socket";
 
 export const project = new Project(initialState, mods)
 
-new SocketOutput({ project, clock, url: 'http://192.168.1.11:81' })
+new OctaCoreOutput({ project, clock, url: 'http://192.168.1.11:81' })
 
 project.setMod('sea')
 
