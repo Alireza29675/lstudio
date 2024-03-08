@@ -10,14 +10,16 @@
   ],
   "license": "MIT",
   "scripts": {
-    "start": "nodemon --watch dist --exec 'node dist/umd/index.js'",
-    "dev": "rollup --config node:@lstudio/rollup-config --watch",
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
     "build": "rollup --config node:@lstudio/rollup-config --environment NODE_ENV:production",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@types/midi": "^2.0.3",
     "@types/ws": "^8.5.10",
+    "midi": "^2.0.0",
     "react": "^18.2.0",
     "ws": "^8.16.0"
   },
@@ -31,6 +33,7 @@
     "@types/node": "^18.19.3",
     "@types/react": "^18.2.43",
     "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
     "typescript": "^4.9.4"
   }
 }

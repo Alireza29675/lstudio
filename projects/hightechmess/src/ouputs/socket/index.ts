@@ -27,7 +27,12 @@ export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
   }
 
   connect() {
-    this.ws = new WebSocket(this.url);
+    try {
+      this.ws = new WebSocket(this.url);
+    } catch (e) {
+      setTimeout(() => this.connect(), 3000);
+      return;
+    }
 
     this.ws.on('open', () => {
       this.ready = true;

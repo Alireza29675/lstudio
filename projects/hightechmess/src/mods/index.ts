@@ -1,3 +1,5 @@
+import './utils/midi'
+
 import { FlashMod } from "./flash"
 import { SandclockMod } from "./sandclock"
 import { SeaMod } from "./sea"
