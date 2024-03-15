@@ -19,7 +19,7 @@ export const initialState: State = {
   ],
   strips: [
     {
-      leds: new Array(90).fill(0),
+      leds: new Array(60).fill(0),
       rotation: 90
     },
     {
@@ -31,7 +31,7 @@ export const initialState: State = {
       rotation: 90
     },
     {
-      leds: new Array(90).fill(3),
+      leds: new Array(60).fill(3),
       rotation: 90
     },
   ]

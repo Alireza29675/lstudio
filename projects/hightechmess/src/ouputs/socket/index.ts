@@ -2,33 +2,44 @@ import WebSocket from 'ws';
 import { Ouput, Project, Clock } from "@lstudio/core";
 import { State } from "../../state";
 import { ClockPayloadType } from "../../clock";
-import { rotateServo } from './commands/rotateServo';
 import { setColorPalette } from './commands/setColorPallete';
-import { setLedBrightness } from './commands/setLedBrightness';
 import { setLedColors } from './commands/setLedColors';
-import midi from '../../mods/utils/midi';
+import { rotateServo } from './commands/rotateServo';
 
 type SocketOutputConstructorArgs = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   project: Project<ClockPayloadType, State, any>,
   clock: Clock<ClockPayloadType>,
   url: string,
-  iOffset?: number,
+  stripIndex: number,
+}
+
+const memoizeAndTriggerOnChange = <T>() => {
+  let lastValue: string | null = null;
+
+  return (value: T, callback: (value: T) => void) => {
+    const serializedValue = JSON.stringify(value);
+    if (lastValue !== serializedValue) {
+      lastValue = serializedValue;
+      callback(value);
+    }
+  };
 }
 
 export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
   private ws: WebSocket | null = null;
   private url: string;
   private ready: boolean = false;
-  
-  private i = 0;
-  private iOffset = 0;
+  private stripIndex: number;
 
-  constructor({ project, clock, url, iOffset }: SocketOutputConstructorArgs) {
+  private paletteTrigger = memoizeAndTriggerOnChange<State['palette']>();
+  private ledsTrigger = memoizeAndTriggerOnChange<State['strips'][number]['leds']>();
+  private rotationTrigger = memoizeAndTriggerOnChange<State['strips'][number]['rotation']>();
+
+  constructor({ project, clock, url, stripIndex }: SocketOutputConstructorArgs) {
     super(project, clock);
     this.url = url;
-
-    this.iOffset = iOffset || 0;
+    this.stripIndex = stripIndex;
 
     this.connect();
   }
@@ -44,12 +55,11 @@ export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
     this.ws.on('open', () => {
       this.ready = true;
       console.log(`[Socket] Connected to ${this.url} ✅`);
-      this.setup();
     });
 
     this.ws.on('error', (error) => {
       console.error(`[Socket] ${error.message} ❌`);
-      this.ready = false;
+      // this.ready = false;
     });
 
     this.ws.on('close', () => {
@@ -64,24 +74,22 @@ export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
     this.ws?.send(data);
   }
 
-  setup(): void {
-    this.send(rotateServo(50));
-    this.send(setColorPalette([
-      { r: 0, g: 0, b: 0 },
-      { r: 255, g: 255, b: 255 },
-      { r: 250, g: 0, b: 100 },
-      { r: 255, g: 255, b: 0 },
-      { r: 0, g: 255, b: 255 },
-      { r: 255, g: 0, b: 255 },
-    ]));
-    this.send(setLedColors(Array(60).fill(2)));
+  setPalette = (palette: State['palette']) => {
+    this.send(setColorPalette(palette));
+  }
+
+  setLeds = (leds: State['strips'][number]['leds']) => {
+    this.send(setLedColors(leds));
+  }
+
+  setRotation = (rotation: State['strips'][number]['rotation']) => {
+    this.send(rotateServo(rotation));
   }
   
-  render(): void {
-    this.i++;
-    const speed = midi.state.knobs[0][0] * 10 + 1;
-    const divergency = midi.state.knobs[1][0];
-    const brightness = Math.max(0, Math.floor(Math.sin((this.i / speed) + (this.iOffset * divergency)) * 200) + 0) + 55;
-    this.send(setLedBrightness(brightness));
+  render(state: State): void {
+    if (!this.ready) return;
+    this.paletteTrigger(state.palette, this.setPalette);
+    this.ledsTrigger(state.strips[this.stripIndex].leds, this.setLeds);
+    this.rotationTrigger(state.strips[this.stripIndex].rotation, this.setRotation);
   }
 }

@@ -61,4 +61,9 @@ export class Color {
     c.darken(amount);
     return c;
   }
+
+  // used in serialization
+  toJSON() {
+    return [this.r, this.g, this.b];
+  }
 }
