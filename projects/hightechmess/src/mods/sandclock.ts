@@ -1,10 +1,6 @@
-import { Color, Mod } from "@lstudio/core"
+import { Mod } from "@lstudio/core"
 import { ClockPayloadType } from "../clock";
 import { State } from "../state";
-
-const black = new Color('#000000')
-const primary = new Color('#00ffef')
-const primaryDarker = primary.darkenClone(0.5);
 
 const createParticle = (strip: State['strips'][number], weight: number) => {
   let location = 0;
@@ -29,8 +25,8 @@ const createParticle = (strip: State['strips'][number], weight: number) => {
 
       const previousLocation = Math.min(Math.max(location + Math.sign(speed), 0), strip.leds.length - 1)
 
-      strip.leds[previousLocation] = primaryDarker
-      strip.leds[location] = primary
+      strip.leds[previousLocation] = 1
+      strip.leds[location] = 1
     }
   }
 }
@@ -50,7 +46,7 @@ export class SandclockMod implements Mod<ClockPayloadType, State> {
 
   update(state: State, clock: ClockPayloadType): State {
     const strip = state.strips[1]
-    strip.leds.fill(black)
+    strip.leds.fill(0)
 
     this.particles.forEach(p => p.next(clock.frameIndex))
 

@@ -1,4 +1,7 @@
 import { Input, Output } from 'midi';
+import { mkdirSync, readFileSync, writeFile } from 'fs';
+import { resolve } from 'path';
+import { throttle } from 'lodash';
 
 enum MidiMixSignalCode {
   BUTTON_PRESS = 144,
@@ -53,6 +56,17 @@ type ControlState = {
   soloButton: number;
 };
 
+const cacheDirectory = resolve(__dirname, '.cache');
+const cacheFile = resolve(cacheDirectory, 'midi-state.json');
+const currentCache = (() => {
+  try {
+    const content = readFileSync(cacheFile, 'utf-8');
+    return JSON.parse(content) as ControlState;
+  } catch (e) {
+    return null;
+  }
+})()
+
 class MidiMixController {
   private midiName: string = 'MIDI Mix';
   private midiInput: Input = new Input();
@@ -61,7 +75,7 @@ class MidiMixController {
   public readonly state: ControlState;
 
   constructor() {
-    this.state = this.initializeState();
+    this.state = currentCache || this.initializeState();
     this.connect();
   }
 
@@ -116,6 +130,8 @@ class MidiMixController {
         this.updateKnobState(control, value);
         break;
     }
+
+    this.saveState();
   }
 
 
@@ -186,6 +202,16 @@ class MidiMixController {
       this.state.faders[faderIndex] = normalizedValue;
     }
   }
+
+  private saveState = throttle(() => {
+    try {
+      const serialized = JSON.stringify(this.state);
+      mkdirSync(cacheDirectory, { recursive: true });
+      writeFile(cacheFile, serialized, () => {});
+    } catch (e) {
+      console.error('Failed to save midi state:', e);
+    }
+  }, 1000);
 }
 
 const midi = new MidiMixController();

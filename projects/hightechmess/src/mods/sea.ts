@@ -1,16 +1,13 @@
-import { Color, Mod } from "@lstudio/core"
+import { Mod } from "@lstudio/core"
 import { ClockPayloadType } from "../clock";
 import { State } from "../state";
-
-const black = new Color('#000000')
-const seaBlue = new Color('#ffffff')
 
 let i = 0;
 
 const drawLine = (strip: State['strips'][number], start: number, offset: number) => {
   const len = Math.floor(Math.sin((i / 10 - offset)) * 6) + 7
   for (let j = start; j < start+len; j++) {
-    strip.leds[j % 60] = seaBlue;
+    strip.leds[j % 60] = 0;
   }
 }
 
@@ -19,7 +16,7 @@ export class SeaMod implements Mod<ClockPayloadType, State> {
     i++
     
     const strip = state.strips[1];
-    strip.leds.fill(black)
+    strip.leds.fill(0)
 
     strip.rotation = 90;
     
