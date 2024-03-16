@@ -1,5 +1,5 @@
 import { Color, Mod } from "@lstudio/core"
-import { ClockPayloadType } from "../clock";
+import { ClockPayload } from "../clock";
 import { State } from "../state";
 
 let i = 0;
@@ -11,7 +11,7 @@ const drawLine = (strip: State['strips'][number], start: number, offset: number)
   }
 }
 
-export class SeaMod implements Mod<ClockPayloadType, State> {
+export class SeaMod implements Mod<ClockPayload, State> {
   init(state: State): State {
     state.palette = [
       new Color("#000"),
