@@ -1,15 +1,17 @@
 import WebSocket from 'ws';
 import { Ouput, Project, Clock } from "@lstudio/core";
 import { State } from "../../state";
-import { ClockPayloadType } from "../../clock";
+import { ClockPayload } from "../../clock";
+
 import { setColorPalette } from './commands/setColorPallete';
 import { setLedColors } from './commands/setLedColors';
 import { rotateServo } from './commands/rotateServo';
+import { setLedBrightness } from './commands/setLedBrightness';
 
 type SocketOutputConstructorArgs = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: Project<ClockPayloadType, State, any>,
-  clock: Clock<ClockPayloadType>,
+  project: Project<ClockPayload, State, any>,
+  clock: Clock<ClockPayload>,
   url: string,
   stripIndex: number,
 }
@@ -26,7 +28,7 @@ const memoizeAndTriggerOnChange = <T>() => {
   };
 }
 
-export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
+export class OctaCoreOutput extends Ouput<ClockPayload, State> {
   private ws: WebSocket | null = null;
   private url: string;
   private ready: boolean = false;
@@ -35,6 +37,7 @@ export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
   private paletteTrigger = memoizeAndTriggerOnChange<State['palette']>();
   private ledsTrigger = memoizeAndTriggerOnChange<State['strips'][number]['leds']>();
   private rotationTrigger = memoizeAndTriggerOnChange<State['strips'][number]['rotation']>();
+  private brightnessTrigger = memoizeAndTriggerOnChange<number>();
 
   constructor({ project, clock, url, stripIndex }: SocketOutputConstructorArgs) {
     super(project, clock);
@@ -85,11 +88,16 @@ export class OctaCoreOutput extends Ouput<ClockPayloadType, State> {
   setRotation = (rotation: State['strips'][number]['rotation']) => {
     this.send(rotateServo(rotation));
   }
+
+  setBrightness = (brightness: number) => {
+    this.send(setLedBrightness(brightness));
+  }
   
   render(state: State): void {
     if (!this.ready) return;
     this.paletteTrigger(state.palette, this.setPalette);
     this.ledsTrigger(state.strips[this.stripIndex].leds, this.setLeds);
     this.rotationTrigger(state.strips[this.stripIndex].rotation, this.setRotation);
+    this.brightnessTrigger(state.strips[this.stripIndex].brightness, this.setBrightness);
   }
 }

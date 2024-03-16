@@ -5,6 +5,7 @@ export interface State {
   strips: Array<{
     leds: number[]
     rotation: number
+    brightness: number
   }>
 }
 
@@ -20,19 +21,23 @@ export const initialState: State = {
   strips: [
     {
       leds: new Array(60).fill(0),
-      rotation: 90
+      rotation: 30,
+      brightness: 255
     },
     {
       leds: new Array(60).fill(1),
-      rotation: 90
+      rotation: 30,
+      brightness: 255
     },
     {
       leds: new Array(60).fill(2),
-      rotation: 90
+      rotation: 30,
+      brightness: 255
     },
     {
       leds: new Array(60).fill(3),
-      rotation: 90
+      rotation: 30,
+      brightness: 255
     },
   ]
 }

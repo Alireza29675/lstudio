@@ -3,6 +3,7 @@ import { initialState } from "./state";
 import { clock } from "./clock";
 import { mods } from "./mods";
 import { OctaCoreOutput } from "./ouputs/socket";
+import './common/midi'
 
 export const project = new Project(initialState, mods)
 
