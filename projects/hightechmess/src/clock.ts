@@ -1,4 +1,4 @@
 import { FPSClock, FPSClockPayloadType } from "@lstudio/clocks";
 
 export const clock = new FPSClock(30)
-export type ClockPayloadType = FPSClockPayloadType
+export type ClockPayload = FPSClockPayloadType
