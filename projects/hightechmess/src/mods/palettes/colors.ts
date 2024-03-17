@@ -3,6 +3,8 @@ import { Color } from "@lstudio/core";
 export const black = new Color('#000000');
 export const white = new Color('#ffffff');
 export const grey = new Color('#808080');
+export const lightGrey = new Color('#d3d3d3');
+export const darkGrey = new Color('#a9a9a9');
 export const red = new Color('#ff0000');
 export const green = new Color('#00ff00');
 export const blue = new Color('#0000ff');

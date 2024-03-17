@@ -12,6 +12,6 @@ new OctaCoreOutput({ project, clock, url: 'http://192.168.68.105:81', stripIndex
 new OctaCoreOutput({ project, clock, url: 'http://192.168.68.107:81', stripIndex: 2 })
 new OctaCoreOutput({ project, clock, url: 'http://192.168.68.108:81', stripIndex: 3 })
 
-project.setMod('sea')
+project.setMod('rain')
 
 clock.start()

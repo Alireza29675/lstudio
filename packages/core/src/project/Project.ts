@@ -2,7 +2,7 @@ import { Mod } from "./Mod";
 import { GenericState } from "./types";
 
 export class Project<C, S extends GenericState, ModList extends string = ''> {
-  private currentMod: ModList
+  private currentMod?: ModList
 
   constructor(
     private _state: S,
@@ -14,7 +14,7 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
       console.warn('You must have at least one mod for this project.');
     }
 
-    this.currentMod = (modNames[0] || '') as ModList
+    this.setMod(modNames[0] as ModList)
   }
 
   public get state(): S {
@@ -22,11 +22,11 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
   }
 
   getMod(): Mod<C, S> {
-    if (!this.mods[this.currentMod]) {
+    if (!this.mods[this.currentMod || '' as ModList]) {
       throw new Error('You should define at least one mod for your project')
     }
 
-    return this.mods[this.currentMod];
+    return this.mods[this.currentMod as ModList]
   }
 
   setMod(name: ModList) {
