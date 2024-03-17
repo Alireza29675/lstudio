@@ -7,6 +7,7 @@ import { setColorPalette } from './commands/setColorPallete';
 import { setLedColors } from './commands/setLedColors';
 import { rotateServo } from './commands/rotateServo';
 import { setLedBrightness } from './commands/setLedBrightness';
+import { fillLeds } from './commands/fillLeds';
 
 type SocketOutputConstructorArgs = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,6 +83,10 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
   }
 
   setLeds = (leds: State['strips'][number]['leds']) => {
+    // check if all leds are the same
+    if (leds.every((led, _, arr) => arr[0] === led)) {
+      return this.send(fillLeds(leds[0]));
+    }
     this.send(setLedColors(leds));
   }
 
