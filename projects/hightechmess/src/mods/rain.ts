@@ -10,6 +10,8 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+const DEFAULT_BRIGTHNESS = 20;
+
 export class RainMod implements OctaCoreMod {
   private rainPatterns: number[][] = Array(4).fill(0).map(() => Array(60).fill(0));
   private isLightning: boolean = false;
@@ -21,7 +23,10 @@ export class RainMod implements OctaCoreMod {
       darkGrey,
       aqua,
     ]
-    state.strips.forEach(strip => strip.rotation = 20);
+    state.strips.forEach(strip => {
+      strip.brightness = DEFAULT_BRIGTHNESS;
+      strip.rotation = 20
+    });
 
     return {
       ...state
@@ -59,6 +64,7 @@ export class RainMod implements OctaCoreMod {
     })
 
     state.strips.forEach((strip, index) => {
+      strip.brightness = this.isLightning ? 255 : DEFAULT_BRIGTHNESS;
       strip.leds = this.rainPatterns[index].map(led => this.isLightning ? 1 : led);
     })
 
