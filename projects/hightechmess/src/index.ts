@@ -4,6 +4,7 @@ import { clock } from "./clock";
 import { mods } from "./mods";
 import { OctaCoreOutput } from "./ouputs/socket";
 import './common/midi'
+import './common/mc-707'
 
 export const project = new Project(initialState, mods)
 

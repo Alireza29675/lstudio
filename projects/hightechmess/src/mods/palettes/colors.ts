@@ -67,3 +67,7 @@ export const viridian = new Color('#40826d');
 export const wisteria = new Color('#c9a0dc');
 export const xanadu = new Color('#738678');
 export const zaffre = new Color('#0014a8');
+
+export const tcsRed = new Color('#ff0a02')
+export const tcsYellow = new Color('#ffaa00')
+export const tcsBlue = new Color('#1f1fff')

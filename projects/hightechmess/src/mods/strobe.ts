@@ -1,19 +1,18 @@
 import { throttle } from "lodash";
 import { OctaCoreMod } from ".";
-import { ClockPayload } from "../clock";
 import midi from "../common/midi";
 import { State } from "../state";
-import { aqua, black, blue, white } from "./palettes/colors";
+import { aqua, black, tcsYellow, white } from "./palettes/colors";
+import { midiInData } from "../common/mc-707";
 
 export class StrobeMod implements OctaCoreMod {
-  private currentLEDIndex = 0;
   private gateIsOpen = false;
 
   init(state: State): State {
     state.palette = [
       black,
       white,
-      blue,
+      tcsYellow,
       aqua,
     ]
     state.strips.forEach(strip => strip.brightness = 255);
@@ -28,9 +27,13 @@ export class StrobeMod implements OctaCoreMod {
     this.gateIsOpen = !this.gateIsOpen;
   }, 1000, { trailing: false });
 
-  update(state: State, { frameIndex }: ClockPayload): State {
-    const rate = Math.floor(midi.state.knobs[0][0] * 10) + 1;
-    
+  switchLED = throttle((state: State, isKick: boolean) => {
+    const currentLEDIndex = Math.floor(Math.random() * 4);
+    state.strips[currentLEDIndex].leds.fill(isKick ? 2 : 3);
+    state.strips[currentLEDIndex].brightness = 255;
+  }, 40, { trailing: false });
+
+  update(state: State): State {    
     if (midi.state.buttons[1][0] > 0) {
       this.toggleGate();
     }
@@ -42,13 +45,11 @@ export class StrobeMod implements OctaCoreMod {
     state.strips[2].rotation = 120 + gateRotation;
     state.strips[3].rotation = 115 + gateRotation;
 
-    if (frameIndex % rate === 0) {
-      this.currentLEDIndex = Math.floor(Math.random() * state.strips.length);
-    }
+    if (midiInData.kick) this.switchLED(state, true)
+    if (midiInData.snare) this.switchLED(state, false)
 
-    state.strips.forEach((strip, i) => {
-      const addedBrightness = i === this.currentLEDIndex ? 30 : -20;
-      strip.brightness = Math.min(255, Math.max(0, strip.brightness + addedBrightness));
+    state.strips.forEach((strip) => {
+      strip.brightness = Math.min(255, Math.max(0, strip.brightness - 5));
     });
     
     return {

@@ -1,7 +1,7 @@
 import { Mod } from "@lstudio/core"
 import { ClockPayload } from "../clock";
 import { State } from "../state";
-import { threeColoredSquaresPalette } from "./palettes/three-colored-squares";
+import { black, grey, red, white } from "./palettes/colors";
 
 let i = 0;
 
@@ -15,7 +15,12 @@ const drawLine = (strip: State['strips'][number], start: number, offset: number)
 
 export class SeaMod implements Mod<ClockPayload, State> {
   init(state: State): State {
-    state.palette = threeColoredSquaresPalette
+    state.palette = [
+      black,
+      white,
+      grey,
+      red,
+    ]
 
     state.strips[0].rotation = 10;
     state.strips[1].rotation = 10;
