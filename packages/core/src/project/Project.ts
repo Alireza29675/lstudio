@@ -1,5 +1,6 @@
 import { Mod } from "./Mod";
 import { GenericState } from "./types";
+import cloneDeep from 'lodash/cloneDeep'
 
 export class Project<C, S extends GenericState, ModList extends string = ''> {
   private currentMod?: ModList
@@ -34,19 +35,19 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
     
     this.currentMod = name;
     const mod = this.getMod()
+    mod.state = cloneDeep(this._state)
     
     if (mod.init) {
-      this._state = mod.init(this.state)
+      mod.init()
+      this._state = cloneDeep(mod.state)
     }
   }
 
-  tick(data: C): void {
-    const newState = this.getMod().update(this.state, data);
-    
-    if (newState === this.state) {
-      throw new Error(`❗ [mod "${this.currentMod}"] The returned state must not be the same object as the input state.`)
-    }
+  tick(clockData: C): void {
+    const mod = this.getMod()
 
-    this._state = newState
+    mod.update(clockData)
+
+    this._state = cloneDeep(mod.state)
   }
 }

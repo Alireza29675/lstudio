@@ -4,28 +4,24 @@ import midi from "../common/midimix";
 import { State } from "../state";
 import { black, tcsBlue, tcsRed, tcsYellow, white } from "./palettes/colors";
 
-export class MetroMod implements OctaCoreMod {
+export class MetroMod extends OctaCoreMod {
   private shape = 'line' as 'line' | 'square';
   private program = 'animateBrightness' as 'strobe' | 'animateBrightness';
 
-  init(state: State): State {
-    state.palette = [
+  init() {
+    this.state.palette = [
       black,
       white,
       tcsRed,
       tcsYellow,
       tcsBlue
     ];
-    state.strips.forEach(strip => strip.brightness = 255);
+    this.state.strips.forEach(strip => strip.brightness = 255);
 
-    state.strips[0].leds.fill(4)
-    state.strips[1].leds.fill(1)
-    state.strips[2].leds.fill(2)
-    state.strips[3].leds.fill(3)
-
-    return {
-      ...state
-    }
+    this.state.strips[0].leds.fill(black)
+    this.state.strips[1].leds.fill(black)
+    this.state.strips[2].leds.fill(white)
+    this.state.strips[3].leds.fill(tcsBlue)
   }
 
   activateMidiButtons() {
@@ -46,19 +42,15 @@ export class MetroMod implements OctaCoreMod {
     }
   }
 
-  update(state: State, { frameIndex }: ClockPayload): State {
+  update({ frameIndex }: ClockPayload) {
     this.activateMidiButtons();
-    this.formShape(state);
+    this.formShape(this.state);
 
     if (this.program === 'animateBrightness') {
-      this.animateBrightness(state, frameIndex);
+      this.animateBrightness(this.state, frameIndex);
     }
     if (this.program === 'strobe') {
-      this.strobe(state, frameIndex);
-    }
-
-    return {
-      ...state
+      this.strobe(this.state, frameIndex);
     }
   }
 

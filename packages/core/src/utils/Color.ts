@@ -62,6 +62,10 @@ export class Color {
     return c;
   }
 
+  toString(): string {
+    return `#${this.r.toString(16).padStart(2, '0')}${this.g.toString(16).padStart(2, '0')}${this.b.toString(16).padStart(2, '0')}`;
+  }
+
   // used in serialization
   toJSON() {
     return [this.r, this.g, this.b];

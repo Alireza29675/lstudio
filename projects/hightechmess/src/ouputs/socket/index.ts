@@ -35,6 +35,8 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
   private ready: boolean = false;
   private stripIndex: number;
 
+  private currentPalette: State['palette'] = [];
+
   private paletteTrigger = memoizeAndTriggerOnChange<State['palette']>();
   private ledsTrigger = memoizeAndTriggerOnChange<State['strips'][number]['leds']>();
   private rotationTrigger = memoizeAndTriggerOnChange<State['strips'][number]['rotation']>();
@@ -79,6 +81,7 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
   }
 
   setPalette = (palette: State['palette']) => {
+    this.currentPalette = palette;
     this.send(setColorPalette(palette));
   }
 
@@ -87,7 +90,16 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
     // if (leds.every((led, _, arr) => arr[0] === led)) {
     //   return this.send(fillLeds(leds[0]));
     // }
-    this.send(setLedColors(leds));
+    const colorIndices = leds.map(led => {
+      const colorIndex = this.currentPalette.indexOf(led)
+
+      if (colorIndex === -1) {
+        throw new Error(`Color ${led.toString()} not found in palette`);
+      }
+
+      return colorIndex;
+    });
+    this.send(setLedColors(colorIndices));
   }
 
   setRotation = (rotation: State['strips'][number]['rotation']) => {

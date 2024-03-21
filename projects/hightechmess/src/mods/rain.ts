@@ -1,8 +1,8 @@
 import { throttle } from "lodash";
 import { OctaCoreMod } from "./common/OctaCoreMod";
 import midi from "../common/midimix";
-import { State } from "../state";
 import { aqua, black, darkGrey, white } from "./palettes/colors";
+import { Color } from "@lstudio/core";
 
 function getRandomInt(min: number, max: number) {
   min = Math.ceil(min);
@@ -12,25 +12,21 @@ function getRandomInt(min: number, max: number) {
 
 const DEFAULT_BRIGTHNESS = 20;
 
-export class RainMod implements OctaCoreMod {
-  private rainPatterns: number[][] = Array(4).fill(0).map(() => Array(60).fill(0));
+export class RainMod extends OctaCoreMod {
+  private rainPatterns: Color[][] = Array(4).fill(0).map(() => Array(60).fill(black));
   private isLightning: boolean = false;
 
-  init(state: State): State {
-    state.palette = [
+  init() {
+    this.state.palette = [
       black,
       white,
       darkGrey,
       aqua,
     ]
-    state.strips.forEach(strip => {
+    this.state.strips.forEach(strip => {
       strip.brightness = DEFAULT_BRIGTHNESS;
       strip.rotation = 20
     });
-
-    return {
-      ...state
-    }
   }
 
   makeLightning = throttle(() => {
@@ -52,24 +48,20 @@ export class RainMod implements OctaCoreMod {
     flashLightning(getRandomInt(3, 6) * 2, 0);
   }, 2000, { trailing: false });
 
-  update(state: State) {
+  update() {
     const raininess = midi.state.faders[0] * 0.2;
     const shouldMakeLightning = midi.state.buttons[1][0] > 0;
 
     if (shouldMakeLightning) this.makeLightning();
 
     this.rainPatterns.forEach(pattern => {
-      pattern.push(Math.random() < raininess ? 2 : 0);
+      pattern.push(Math.random() < raininess ? darkGrey : black);
       pattern.shift();
     })
 
-    state.strips.forEach((strip, index) => {
+    this.state.strips.forEach((strip, index) => {
       strip.brightness = this.isLightning ? 255 : DEFAULT_BRIGTHNESS;
-      strip.leds = this.rainPatterns[index].map(led => this.isLightning ? 1 : led);
+      strip.leds = this.rainPatterns[index].map(led => this.isLightning ? white : led);
     })
-
-    return {
-      ...state
-    };
   }
 }

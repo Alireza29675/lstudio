@@ -1,9 +1,9 @@
 import { Color } from "@lstudio/core"
-
+import { black, white } from "./mods/palettes/colors"
 export interface State {
   palette: Color[]
   strips: Array<{
-    leds: number[]
+    leds: Color[]
     rotation: number
     brightness: number
   }>
@@ -11,33 +11,29 @@ export interface State {
 
 export const initialState: State = {
   palette: [
-    new Color('#ff0000'),
-    new Color('#00ff00'),
-    new Color('#0000ff'),
-    new Color('#ffff00'),
-    new Color('#00ffff'),
-    new Color('#ff00ff'),
+    black,
+    white
   ],
   strips: [
     {
-      leds: new Array(60).fill(1),
+      leds: new Array(60).fill(black),
       rotation: 30,
-      brightness: 255
+      brightness: 100
     },
     {
-      leds: new Array(60).fill(2),
+      leds: new Array(60).fill(black),
       rotation: 30,
-      brightness: 255
+      brightness: 100
     },
     {
-      leds: new Array(60).fill(3),
+      leds: new Array(60).fill(black),
       rotation: 30,
-      brightness: 255
+      brightness: 100
     },
     {
-      leds: new Array(60).fill(4),
+      leds: new Array(60).fill(black),
       rotation: 30,
-      brightness: 255
+      brightness: 100
     },
   ]
 }

@@ -1,30 +1,22 @@
 import { OctaCoreMod } from "./common/OctaCoreMod";
 import { ClockPayload } from "../clock";
-import { State } from "../state";
-import { black, white } from "./palettes/colors";
+import { black, red, white } from "./palettes/colors";
 
-export class BlackMod implements OctaCoreMod {
-  init(state: State): State {
-    state.palette = [
+export class BlackMod extends OctaCoreMod {
+  init() {
+    this.state.palette = [
       black,
       white,
+      red,
     ]
-    state.strips.forEach(strip => {
+    this.state.strips.forEach(strip => {
       strip.brightness = 10;
-      strip.leds.fill(1);
+      strip.leds.fill(red);
       strip.rotation = 0;
     });
-
-    return {
-      ...state
-    }
   }
 
-  update(state: State, { frameIndex }: ClockPayload): State {
+  update({ frameIndex }: ClockPayload) {
     console.log({ frameIndex });
-
-    return {
-      ...state
-    }
   }
 }
