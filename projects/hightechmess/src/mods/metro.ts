@@ -1,6 +1,6 @@
 import { OctaCoreMod } from ".";
 import { ClockPayload } from "../clock";
-import midi from "../common/midi";
+import midi from "../common/midimix";
 import { State } from "../state";
 import { black, tcsBlue, tcsRed, tcsYellow, white } from "./palettes/colors";
 

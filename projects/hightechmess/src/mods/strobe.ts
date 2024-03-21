@@ -1,9 +1,10 @@
 import { throttle } from "lodash";
 import { OctaCoreMod } from ".";
-import midi from "../common/midi";
+import midi from "../common/midimix";
 import { State } from "../state";
-import { aqua, black, tcsYellow, white } from "./palettes/colors";
-import { midiInData } from "../common/mc-707";
+import { black, tcsYellow, white } from "./palettes/colors";
+// import { midiInData } from "../common/midi-instrument";
+import { ClockPayload } from "../clock";
 
 export class StrobeMod implements OctaCoreMod {
   private gateIsOpen = false;
@@ -13,7 +14,7 @@ export class StrobeMod implements OctaCoreMod {
       black,
       white,
       tcsYellow,
-      aqua,
+      tcsYellow,
     ]
     state.strips.forEach(strip => strip.brightness = 255);
     state.strips.forEach(strip => strip.leds.fill(3));
@@ -33,7 +34,7 @@ export class StrobeMod implements OctaCoreMod {
     state.strips[currentLEDIndex].brightness = 255;
   }, 40, { trailing: false });
 
-  update(state: State): State {    
+  update(state: State, { frameIndex }: ClockPayload): State {    
     if (midi.state.buttons[1][0] > 0) {
       this.toggleGate();
     }
@@ -45,8 +46,8 @@ export class StrobeMod implements OctaCoreMod {
     state.strips[2].rotation = 120 + gateRotation;
     state.strips[3].rotation = 115 + gateRotation;
 
-    if (midiInData.kick) this.switchLED(state, true)
-    if (midiInData.snare) this.switchLED(state, false)
+    if (frameIndex % 10 === 0) this.switchLED(state, true)
+    if (frameIndex % 7 === 0) this.switchLED(state, false)
 
     state.strips.forEach((strip) => {
       strip.brightness = Math.min(255, Math.max(0, strip.brightness - 5));
