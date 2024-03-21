@@ -35,7 +35,7 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
     
     this.currentMod = name;
     const mod = this.getMod()
-    mod.state = cloneDeep(this._state)
+    mod.setInitialState(cloneDeep(this._state))
     
     if (mod.init) {
       mod.init()

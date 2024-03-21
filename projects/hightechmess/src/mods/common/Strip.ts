@@ -10,4 +10,16 @@ export class Strip {
     this.rotation = rotation;
     this.leds = leds;
   }
+
+  setBrightness(brightness: number): void {
+    this.brightness = brightness;
+  }
+
+  setRotation(rotation: number): void {
+    this.rotation = rotation;
+  }
+
+  fill(color: Color): void {
+    this.leds.fill(color);
+  }
 }

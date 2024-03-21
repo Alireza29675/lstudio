@@ -10,39 +10,33 @@ export abstract class OctaCoreMod implements Mod<ClockPayload, State> {
   abstract init(): void
   abstract update(clockData: ClockPayload): void
   
-  setState(state: State): void {
+  setInitialState(state: State): void {
     this.state = state;
     this.strips = state.strips.map(strip => new Strip(strip.brightness, strip.rotation, strip.leds));
-  }
-
-  getStrip(index: number): Strip {
-    return this.strips[index];
   }
 
   setPalette(palette: Color[]): void {
     this.state.palette = palette;
   }
 
-  // Brightness is a number between 0 and 255
   setBrightness(brightness: number): void {
-    this.state.strips.forEach(strip => strip.brightness = brightness);
-  }
-  setStripBrightness(stripIndex: number, brightness: number): void {
-    this.state.strips[stripIndex].brightness = brightness;
+    this.strips.forEach(strip => strip.setBrightness(brightness));
   }
 
-  // Rotation is a number between 0 and 180
-  setStripRotation(stripIndex: number, rotation: number): void {
-    this.state.strips[stripIndex].rotation = rotation;
-  }
-  setRotations(rotations: number[]): void {
-    this.state.strips.forEach((_, i) => {
-      rotations[i] && this.setStripRotation(i, rotations[i])
-    });
+  setRotation(rotation: number): void {
+    this.strips.forEach(strip => strip.setRotation(rotation));
   }
 
-  // Fill all strips with a color
   fill(color: Color): void {
-    this.state.strips.forEach(strip => strip.leds.fill(color));
+    this.strips.forEach(strip => strip.fill(color));
   }
+
+  each(callback: (strip: Strip) => void): void {
+    this.strips.forEach(callback);
+  }
+
+  pick(offset: number, count: number, callback: (strip: Strip) => void): void {
+    this.strips.slice(offset, offset + count).forEach(callback);
+  }
+
 }
