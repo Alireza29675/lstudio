@@ -21,4 +21,17 @@ export class StripAdapter {
   fill(color: Color): void {
     this.strip.leds.fill(color);
   }
+
+  setRangeColor(start: number, end: number, color: Color): void {
+    const length = this.strip.leds.length;
+    const min = Math.min(start % length, end % length);
+    const max = Math.max(start % length, end % length);
+    for (let i = min; i < max; i++) {
+      this.strip.leds[i] = color;
+    }
+  }
+
+  setPixelColor(index: number, color: Color): void {
+    this.strip.leds[index] = color;
+  }
 }

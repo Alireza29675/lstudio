@@ -4,19 +4,19 @@ import { black, red, white } from "./palettes/colors";
 
 export class BlackMod extends OctaCoreMod {
   init() {
-    this.state.palette = [
+    this.setPalette([
       black,
       white,
       red,
-    ]
-    this.state.strips.forEach(strip => {
-      strip.brightness = 10;
-      strip.leds.fill(red);
-      strip.rotation = 0;
+    ])
+    this.each(strip => {
+      strip.setBrightness(10);
+      strip.fill(white);
+      strip.setRotation(0)
     });
   }
 
   update({ frameIndex }: ClockPayload) {
-    console.log({ frameIndex });
+    this.get(0).setPixelColor(frameIndex % 30, black);
   }
 }
