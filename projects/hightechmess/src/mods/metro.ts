@@ -1,4 +1,4 @@
-import { OctaCoreMod } from ".";
+import { OctaCoreMod } from "./common/OctaCoreMod";
 import { ClockPayload } from "../clock";
 import midi from "../common/midimix";
 import { State } from "../state";

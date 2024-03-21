@@ -1,5 +1,5 @@
 import { throttle } from "lodash";
-import { OctaCoreMod } from ".";
+import { OctaCoreMod } from "./common/OctaCoreMod";
 import midi from "../common/midimix";
 import { State } from "../state";
 import { black, tcsYellow, white } from "./palettes/colors";
@@ -50,7 +50,7 @@ export class StrobeMod implements OctaCoreMod {
     if (frameIndex % 7 === 0) this.switchLED(state, false)
 
     state.strips.forEach((strip) => {
-      strip.brightness = Math.min(255, Math.max(0, strip.brightness - 5));
+      strip.brightness = Math.min(255, Math.max(0, strip.brightness - 5)) * midi.state.masterFader;
     });
     
     return {

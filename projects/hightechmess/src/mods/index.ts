@@ -1,18 +1,15 @@
-import { Mod } from "@lstudio/core"
 import { SeaMod } from "./sea"
-import { ClockPayload } from "../clock"
-import { State } from "../state"
 import { RainMod } from "./rain"
 import { StrobeMod } from "./strobe"
 import { MetroMod } from "./metro"
-import { HamedMod } from "./hamed"
-
-export type OctaCoreMod = Mod<ClockPayload, State>
+import { RivalConsolesMod } from "./rival-consoles"
+import { BlackMod } from "./black"
 
 export const mods = {
-  hamed: new HamedMod,
-  metro: new MetroMod,
+  black: new BlackMod,
+  rivalConsoles: new RivalConsolesMod,
   strobe: new StrobeMod,
-  sea: new SeaMod,
   rain: new RainMod,
+  metro: new MetroMod,
+  sea: new SeaMod,
 }

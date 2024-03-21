@@ -1,5 +1,5 @@
 import { throttle } from "lodash";
-import { OctaCoreMod } from ".";
+import { OctaCoreMod } from "./common/OctaCoreMod";
 import midi from "../common/midimix";
 import { State } from "../state";
 import { aqua, black, darkGrey, white } from "./palettes/colors";
