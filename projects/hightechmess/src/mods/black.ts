@@ -1,13 +1,13 @@
 import { OctaCoreMod } from "./common/OctaCoreMod";
 import { ClockPayload } from "../clock";
-import { black, red, white } from "./palettes/colors";
+import { black, white, yellow } from "./palettes/colors";
 
 export class BlackMod extends OctaCoreMod {
   init() {
     this.setPalette([
       black,
       white,
-      red,
+      yellow,
     ])
     this.each(strip => {
       strip.setBrightness(10);
@@ -17,6 +17,8 @@ export class BlackMod extends OctaCoreMod {
   }
 
   update({ frameIndex }: ClockPayload) {
-    this.get(0).setPixelColor(frameIndex % 30, black);
+    this.fill(white);
+    this.get(3).setRangeColor(frameIndex % 60, frameIndex % 60 + 10, yellow);
+    this.get(1).setRangeColor(frameIndex + 10 % 60, frameIndex + 10 % 60 + 40, yellow);
   }
 }

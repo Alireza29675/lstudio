@@ -60,6 +60,7 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
 
     this.ws.on('open', () => {
       this.ready = true;
+      this.send(setColorPalette(this.currentPalette));
       console.log(`[Socket] Connected to ${this.url} ✅`);
     });
 
@@ -90,10 +91,12 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
     // if (leds.every((led, _, arr) => arr[0] === led)) {
     //   return this.send(fillLeds(leds[0]));
     // }
+    
     const colorIndices = leds.map(led => {
       const colorIndex = this.currentPalette.indexOf(led)
-
+      
       if (colorIndex === -1) {
+        console.log(this.stripIndex, this.currentPalette)
         throw new Error(`Color ${led.toString()} not found in palette`);
       }
 
@@ -111,7 +114,6 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
   }
   
   render(state: State): void {
-    if (!this.ready) return;
     this.paletteTrigger(state.palette, this.setPalette);
     this.ledsTrigger(state.strips[this.stripIndex].leds, this.setLeds);
     this.rotationTrigger(state.strips[this.stripIndex].rotation, this.setRotation);

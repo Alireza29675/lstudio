@@ -1,6 +1,14 @@
+import cloneDeepWith from "lodash/cloneDeepWith";
 import { Mod } from "./Mod";
 import { GenericState } from "./types";
-import cloneDeep from 'lodash/cloneDeep'
+import { Color } from "../utils/Color";
+
+function cloneState<S extends GenericState>(state: S): S {
+  // cloneDeepWith is used to clone the state object and keep the Color instances as they are
+  return cloneDeepWith(state, (val) => {
+      if (val instanceof Color) return val;
+  });
+}
 
 export class Project<C, S extends GenericState, ModList extends string = ''> {
   private currentMod?: ModList
@@ -35,11 +43,11 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
     
     this.currentMod = name;
     const mod = this.getMod()
-    mod.setInitialState(cloneDeep(this._state))
+    mod.setInitialState(cloneState(this._state))
     
     if (mod.init) {
       mod.init()
-      this._state = cloneDeep(mod.state)
+      this._state = cloneState(mod.state)
     }
   }
 
@@ -48,6 +56,6 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
 
     mod.update(clockData)
 
-    this._state = cloneDeep(mod.state)
+    this._state = cloneState(mod.state)
   }
 }
