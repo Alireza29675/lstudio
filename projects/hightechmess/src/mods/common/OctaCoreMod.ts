@@ -10,7 +10,7 @@ export abstract class OctaCoreMod implements Mod<ClockPayload, State> {
   abstract init(): void
   abstract update(clockData: ClockPayload): void
   
-  setInitialState(state: State): void {
+  onSelected(state: State): void {
     this.state = state;
     this.strips = state.strips.map(strip => new StripAdapter(strip));
   }

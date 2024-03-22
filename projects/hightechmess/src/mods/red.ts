@@ -4,14 +4,15 @@ import { black, white } from "./palettes/colors";
 
 export class RedMod extends OctaCoreMod {
   init() {
-    this.state.palette = [
+    this.setPalette([
       black,
       white,
-    ]
-    this.state.strips.forEach(strip => {
-      strip.brightness = 255;
-      strip.leds.fill(black);
-      strip.rotation = 0;
+    ])
+    
+    this.each(strip => {
+      strip.setBrightness(255);
+      strip.fill(black);
+      strip.setRotation(0);
     });
   }
 

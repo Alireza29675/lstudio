@@ -23,7 +23,7 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
       console.warn('You must have at least one mod for this project.');
     }
 
-    this.setMod(modNames[0] as ModList)
+    this.selectMod(modNames[0] as ModList)
   }
 
   public get state(): S {
@@ -38,12 +38,12 @@ export class Project<C, S extends GenericState, ModList extends string = ''> {
     return this.mods[this.currentMod as ModList]
   }
 
-  setMod(name: ModList) {
+  selectMod(name: ModList) {
     if (name === this.currentMod) return;
     
     this.currentMod = name;
     const mod = this.getMod()
-    mod.setInitialState(cloneState(this._state))
+    mod.onSelected(cloneState(this._state))
     
     if (mod.init) {
       mod.init()

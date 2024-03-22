@@ -3,12 +3,7 @@ import { OctaCoreMod } from "./common/OctaCoreMod";
 import midi from "../common/midimix";
 import { aqua, black, darkGrey, white } from "./palettes/colors";
 import { Color } from "@lstudio/core";
-
-function getRandomInt(min: number, max: number) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+import { randInt } from "./common/math";
 
 const DEFAULT_BRIGTHNESS = 20;
 
@@ -17,36 +12,18 @@ export class RainMod extends OctaCoreMod {
   private isLightning: boolean = false;
 
   init() {
-    this.state.palette = [
+    this.setPalette([
       black,
       white,
       darkGrey,
       aqua,
-    ]
-    this.state.strips.forEach(strip => {
-      strip.brightness = DEFAULT_BRIGTHNESS;
-      strip.rotation = 20
+    ])
+
+    this.each(strip => {
+      strip.setBrightness(DEFAULT_BRIGTHNESS);
+      strip.setRotation(20)
     });
   }
-
-  makeLightning = throttle(() => {
-    const flashLightning = (remaining: number, minDuration: number) => {
-      if (remaining <= 0) {
-        this.isLightning = false;
-        return;
-      }
-      this.isLightning = !this.isLightning;
-  
-      // Randomize the next state change within a range to simulate natural behavior
-      const nextChangeInMs = this.isLightning ? getRandomInt(minDuration, minDuration + 50) : getRandomInt(40, 200);
-  
-      setTimeout(() => {
-        flashLightning(remaining - 1, minDuration + 10);
-      }, nextChangeInMs);
-    };
-
-    flashLightning(getRandomInt(3, 6) * 2, 0);
-  }, 2000, { trailing: false });
 
   update() {
     const raininess = midi.state.faders[0] * 0.2;
@@ -64,4 +41,23 @@ export class RainMod extends OctaCoreMod {
       strip.leds = this.rainPatterns[index].map(led => this.isLightning ? white : led);
     })
   }
+
+  makeLightning = throttle(() => {
+    const flashLightning = (remaining: number, minDuration: number) => {
+      if (remaining <= 0) {
+        this.isLightning = false;
+        return;
+      }
+      this.isLightning = !this.isLightning;
+  
+      // Randomize the next state change within a range to simulate natural behavior
+      const nextChangeInMs = this.isLightning ? randInt(minDuration, minDuration + 50) : randInt(40, 200);
+  
+      setTimeout(() => {
+        flashLightning(remaining - 1, minDuration + 10);
+      }, nextChangeInMs);
+    };
+
+    flashLightning(randInt(3, 6) * 2, 0);
+  }, 2000, { trailing: false });
 }
