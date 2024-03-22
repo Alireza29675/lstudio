@@ -34,6 +34,9 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
   private url: string;
   private ready: boolean = false;
   private stripIndex: number;
+  
+  private markAsReady: () => void = () => {};
+  readonly waitToGetReady: Promise<void>;
 
   private currentPalette: State['palette'] = [];
 
@@ -46,6 +49,8 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
     super(project, clock);
     this.url = url;
     this.stripIndex = stripIndex;
+
+    this.waitToGetReady = new Promise((resolve) => this.markAsReady = resolve);
 
     this.connect();
   }
@@ -60,6 +65,7 @@ export class OctaCoreOutput extends Ouput<ClockPayload, State> {
 
     this.ws.on('open', () => {
       this.ready = true;
+      this.markAsReady();
       this.send(setColorPalette(this.currentPalette));
       console.log(`[Socket] Connected to ${this.url} ✅`);
     });

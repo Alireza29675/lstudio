@@ -6,7 +6,7 @@ import midi from "./common/midimix";
 
 type ModList = keyof typeof mods;
 
-class OctaCoreProject extends Project<ClockPayload, State, ModList> {
+export class OctaCoreProject extends Project<ClockPayload, State, ModList> {
   constructor(initialState: State, mods: Record<ModList, Mod<ClockPayload, State>>) {
     super(initialState, mods)
 

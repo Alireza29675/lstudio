@@ -1,13 +1,12 @@
 import { Color } from "@lstudio/core";
 import { State } from "../../state";
 
-type StripData = State["strips"][0];
-
 export class StripAdapter {
-  private strip: StripData;
-  
-  constructor(strip: StripData) {
-    this.strip = strip;
+  constructor(readonly state: State, readonly stripIndex: number) {
+  }
+
+  get strip() {
+    return this.state.strips[this.stripIndex];
   }
 
   setBrightness(brightness: number): void {

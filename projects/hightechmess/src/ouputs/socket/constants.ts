@@ -4,4 +4,5 @@ export enum CommandID {
   SET_LED_COLORS = 3,
   FILL_LED = 4,
   SET_LED_BRIGTHNESS = 5,
+  RESET_WIFI_SETTINGS = 15,
 }

@@ -34,7 +34,11 @@ export abstract class OctaCoreMod implements Mod<ClockPayload, State> {
   
   onSelected(state: State): void {
     this.state = state;
-    this.strips = state.strips.map(strip => new StripAdapter(strip));
+    this.strips = [];
+
+    for (let i = 0; i < state.strips.length; i++) {
+      this.strips.push(new StripAdapter(state, i));
+    }
   }
 
   setPalette(palette: Color[]): void {

@@ -1,10 +1,10 @@
 import { clock } from "./clock";
-import { OctaCoreOutput } from "./ouputs/socket";
+import { createSyncedSocketOutput } from "./ouputs/socket/createSyncSocketOutput";
 import { project } from "./project";
 
-new OctaCoreOutput({ project, clock, url: 'http://192.168.68.108:81', stripIndex: 0 })
-new OctaCoreOutput({ project, clock, url: 'http://192.168.1.11:81', stripIndex: 1 })
-new OctaCoreOutput({ project, clock, url: 'http://192.168.68.107:81', stripIndex: 2 })
-new OctaCoreOutput({ project, clock, url: 'http://192.168.68.105:81', stripIndex: 3 })
-
-clock.start()
+createSyncedSocketOutput(project, clock, [
+  'http://192.168.68.102:81',
+  'http://192.168.68.101:81',
+  'http://192.168.68.105:81',
+  'http://192.168.68.100:81',
+])
