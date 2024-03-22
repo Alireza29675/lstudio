@@ -28,7 +28,7 @@ export class StrobeMod extends OctaCoreMod {
     state.strips[currentLEDIndex].brightness = 255;
   }, 40, { trailing: false });
 
-  update({ frameIndex }: ClockPayload) {    
+  update({ index }: ClockPayload) {    
     if (this.midi.buttons.mute) {
       this.toggleGate();
     }
@@ -40,8 +40,8 @@ export class StrobeMod extends OctaCoreMod {
     this.state.strips[2].rotation = 120 + gateRotation;
     this.state.strips[3].rotation = 115 + gateRotation;
 
-    if (frameIndex % 10 === 0) this.switchLED(this.state, true)
-    if (frameIndex % 7 === 0) this.switchLED(this.state, false)
+    if (index % 10 === 0) this.switchLED(this.state, true)
+    if (index % 7 === 0) this.switchLED(this.state, false)
 
     this.state.strips.forEach((strip) => {
       strip.brightness = Math.min(255, Math.max(0, strip.brightness - 5)) * this.midi.fader;

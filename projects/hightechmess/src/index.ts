@@ -7,8 +7,4 @@ new OctaCoreOutput({ project, clock, url: 'http://192.168.1.11:81', stripIndex: 
 new OctaCoreOutput({ project, clock, url: 'http://192.168.68.107:81', stripIndex: 2 })
 new OctaCoreOutput({ project, clock, url: 'http://192.168.68.105:81', stripIndex: 3 })
 
-// import { connectToMidiDevice } from './common/midi-instrument'
-// connectToMidiDevice('Rubix')
-// connectToMidiDevice('MC-707')
-
 clock.start()

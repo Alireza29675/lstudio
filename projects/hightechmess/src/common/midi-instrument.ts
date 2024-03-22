@@ -8,33 +8,85 @@ enum ControlCode {
   HiHat = 42,
 }
 
-export const midiInData = {
-  kick: false,
-  snare: false
-}
+export class ExternalMidiInstrument {
+  isConnected = false;
+  midiInput: Input;
+  connectionRetryIntervalId: NodeJS.Timeout | null = null;
+  currentPortIndex: number | null = null;
 
-const processMidiMessage = ([signalCode, midiControlCode]: MidiMessage) => {
-  return {
-    getControlState: (controlCode: ControlCode,) => {
-      return signalCode === PRESSED && midiControlCode === controlCode;
-    }
-  }
-}
-
-export function connectToMidiDevice(partialName: string) {
-  const device = new Input();
-  const portCount = device.getPortCount();
-  for (let i = 0; i < portCount; i++) {
-    if (device.getPortName(i).toLowerCase().includes(partialName.toLowerCase())) {
-      device.openPort(i);
-      break;
-    }
+  readonly data = {
+    isKick: false,
+    isSnare: false,
+    isHiHat: false,
   }
 
-  device.on('message', (_, message) => {
-    const { getControlState } = processMidiMessage(message);
-    
-    midiInData.kick = getControlState(ControlCode.Kick)
-    midiInData.snare = getControlState(ControlCode.Snare)
-  });
+  constructor(readonly listOfPossibleDevices: string[], readonly debuggerEnabled = false) {
+    this.midiInput = new Input();
+    this.searchAndConnect();
+    this.monitorConnection();
+  }
+
+  searchAndConnect() {
+    for (let i = 0; i < this.midiInput.getPortCount(); i++) {
+      const name = this.midiInput.getPortName(i);
+      if (this.debuggerEnabled) {
+        console.log(`🎹 Found device: ${name}`);
+      }
+      if (this.listOfPossibleDevices.find((device) => name.toLowerCase().includes(device.toLowerCase()))) {
+        this.midiInput.openPort(i);
+        this.isConnected = true;
+        this.currentPortIndex = i;
+        console.log(`🎹 Connected to instrument ${name}`);
+        this.midiInput.on('message', (_, message) => this.handleMidiMessage(message));
+        return;
+      }
+    }
+    this.retryConnection();
+  }
+
+  handleMidiMessage(message: MidiMessage) {
+    const [status, control] = message;
+    const isPressed = status === PRESSED;
+
+    switch(control) {
+      case ControlCode.Kick:
+        this.data.isKick = isPressed;
+        break;
+      case ControlCode.Snare:
+        this.data.isSnare = isPressed;
+        break;
+      case ControlCode.HiHat:
+        this.data.isHiHat = isPressed;
+        break;
+    }
+  }
+
+  monitorConnection() {
+    const checkDeviceConnected = () => {
+      let devicePresent = false;
+      for (let i = 0; i < this.midiInput.getPortCount(); i++) {
+        if (this.listOfPossibleDevices.includes(this.midiInput.getPortName(i))) {
+          devicePresent = true;
+          break;
+        }
+      }
+
+      if (!devicePresent) {
+        this.isConnected = false;
+        this.retryConnection();
+      }
+    };
+    setInterval(checkDeviceConnected, 3000);
+  }
+
+  retryConnection() {
+    if (this.connectionRetryIntervalId) {
+      clearInterval(this.connectionRetryIntervalId);
+    }
+    this.connectionRetryIntervalId = setInterval(() => {
+      if (!this.isConnected) {
+        this.searchAndConnect();
+      }
+    }, 3000);
+  }
 }

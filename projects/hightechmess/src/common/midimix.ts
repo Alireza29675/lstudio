@@ -117,7 +117,7 @@ class MidiMixController {
       if (device.getPortName(i).includes(this.midiName)) {
         device.openPort(i);
         this.isConnected = true;
-        console.log(`Connected to AKAI MidiMix ${type}`);
+        console.log(`🎛️ Connected to AKAI MidiMix ${type}`);
         break;
       }
     }

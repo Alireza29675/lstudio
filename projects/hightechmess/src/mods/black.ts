@@ -16,9 +16,9 @@ export class BlackMod extends OctaCoreMod {
     });
   }
 
-  update({ frameIndex }: ClockPayload) {
+  update({ index }: ClockPayload) {
     this.fill(white);
-    this.get(3).setRangeColor(frameIndex % 60, frameIndex % 60 + 10, yellow);
-    this.get(1).setRangeColor(frameIndex + 10 % 60, frameIndex + 10 % 60 + 40, yellow);
+    this.get(3).setRangeColor(index % 60, index % 60 + 10, yellow);
+    this.get(1).setRangeColor(index + 10 % 60, index + 10 % 60 + 40, yellow);
   }
 }

@@ -42,15 +42,15 @@ export class MetroMod extends OctaCoreMod {
     }
   }
 
-  update({ frameIndex }: ClockPayload) {
+  update({ index }: ClockPayload) {
     this.activateMidiButtons();
     this.formShape(this.state);
 
     if (this.program === 'animateBrightness') {
-      this.animateBrightness(this.state, frameIndex);
+      this.animateBrightness(this.state, index);
     }
     if (this.program === 'strobe') {
-      this.strobe(this.state, frameIndex);
+      this.strobe(this.state, index);
     }
   }
 
@@ -69,17 +69,17 @@ export class MetroMod extends OctaCoreMod {
     }
   }
 
-  animateBrightness = (state: State, frameIndex: number) => {
+  animateBrightness = (state: State, index: number) => {
     for (let i = 0; i < state.strips.length; i++) {
       const offset = i * Math.PI / 2;
-      state.strips[i].brightness = Math.sin(frameIndex / 10 + offset) * 100 + 155;
+      state.strips[i].brightness = Math.sin(index / 10 + offset) * 100 + 155;
     }
   }
 
-  strobe = (state: State, frameIndex: number) => {
+  strobe = (state: State, index: number) => {
     for (let i = 0; i < state.strips.length; i++) {
       const offset = i * Math.PI / 2;
-      state.strips[i].brightness = Math.sin(frameIndex + offset) * 200 + 55;
+      state.strips[i].brightness = Math.sin(index + offset) * 200 + 55;
     }
   }
 }

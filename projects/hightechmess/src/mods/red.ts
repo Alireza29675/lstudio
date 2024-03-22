@@ -16,7 +16,7 @@ export class RedMod extends OctaCoreMod {
     });
   }
 
-  update({ frameIndex }: ClockPayload) {
-    console.log({ frameIndex });
+  update({ index }: ClockPayload) {
+    console.log({ index });
   }
 }
