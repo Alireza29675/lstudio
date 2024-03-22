@@ -17,8 +17,13 @@ export class StripAdapter {
     this.strip.rotation = rotation;
   }
 
-  fill(color: Color): void {
-    this.strip.leds.fill(color);
+  fill(colorOrMapFn: Color | ((index: number, color: Color) => Color)): void {
+    if (typeof colorOrMapFn === 'function') {
+      this.strip.leds = this.strip.leds.map((color, i) => colorOrMapFn(i, color));
+      return;
+    }
+
+    this.strip.leds.fill(colorOrMapFn as Color);
   }
 
   setRangeColor(start: number, end: number, color: Color): void {

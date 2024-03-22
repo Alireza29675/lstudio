@@ -3,6 +3,7 @@ import { ExternalMidiInstrument } from './common/midi-instrument'
 
 export type ClockPayload = {
   index: number,
+  angle: number,
   isKick: boolean,
   isSnare: boolean,
 }
@@ -35,9 +36,11 @@ export class MidiConnectedClock extends Clock<ClockPayload> {
     const ms = Math.round(1000 / this.fps)
     this.interval = setInterval(() => {
       this.index++;
+      const angle = (this.index * Math.PI / 100) % (Math.PI * 2);
 
       this.tick({
         index: this.index,
+        angle,
         isKick: this.isKick,
         isSnare: this.isSnare,
       })

@@ -61,7 +61,7 @@ export abstract class OctaCoreMod implements Mod<ClockPayload, State> {
     return this.strips[index];
   }
 
-  each(callback: (strip: StripAdapter) => void): void {
+  each(callback: (strip: StripAdapter, index: number) => void): void {
     this.strips.forEach(callback);
   }
 
