@@ -142,6 +142,9 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.2.0
+      simplex-noise:
+        specifier: ^4.0.1
+        version: 4.0.1
       ws:
         specifier: ^8.16.0
         version: 8.16.0
@@ -3999,6 +4002,10 @@ packages:
     dependencies:
       semver: 7.5.4
     dev: true
+
+  /simplex-noise@4.0.1:
+    resolution: {integrity: sha512-zl/+bdSqW7HJOQ0oDbxrNYaF4F5ik0i7M6YOYmEoIJNtg16NpvWaTTM1Y7oV/7T0jFljawLgYPS81Uu2rsfo1A==}
+    dev: false
 
   /slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
