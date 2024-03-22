@@ -1,6 +1,5 @@
 import { throttle } from "lodash";
 import { OctaCoreMod } from "./common/OctaCoreMod";
-import midi from "../common/midimix";
 import { aqua, black, darkGrey, white } from "./palettes/colors";
 import { Color } from "@lstudio/core";
 import { randInt } from "./common/math";
@@ -26,8 +25,8 @@ export class RainMod extends OctaCoreMod {
   }
 
   update() {
-    const raininess = midi.state.faders[0] * 0.2;
-    const shouldMakeLightning = midi.state.buttons[1][0] > 0;
+    const raininess = this.midi.fader * 0.2;
+    const shouldMakeLightning = this.midi.buttons.mute;
 
     if (shouldMakeLightning) this.makeLightning();
 

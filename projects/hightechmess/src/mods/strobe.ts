@@ -1,6 +1,5 @@
 import { throttle } from "lodash";
 import { OctaCoreMod } from "./common/OctaCoreMod";
-import midi from "../common/midimix";
 import { State } from "../state";
 import { black, tcsBlue, white } from "./palettes/colors";
 // import { midiInData } from "../common/midi-instrument";
@@ -30,7 +29,7 @@ export class StrobeMod extends OctaCoreMod {
   }, 40, { trailing: false });
 
   update({ frameIndex }: ClockPayload) {    
-    if (midi.state.buttons[1][0] > 0) {
+    if (this.midi.buttons.mute) {
       this.toggleGate();
     }
 
@@ -45,7 +44,7 @@ export class StrobeMod extends OctaCoreMod {
     if (frameIndex % 7 === 0) this.switchLED(this.state, false)
 
     this.state.strips.forEach((strip) => {
-      strip.brightness = Math.min(255, Math.max(0, strip.brightness - 5)) * midi.state.masterFader;
+      strip.brightness = Math.min(255, Math.max(0, strip.brightness - 5)) * this.midi.fader;
     });
   }
 }

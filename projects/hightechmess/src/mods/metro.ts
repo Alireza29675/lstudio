@@ -26,18 +26,18 @@ export class MetroMod extends OctaCoreMod {
 
   activateMidiButtons() {
     // Formation shape
-    if (midi.state.buttons[1][0] > 0) {
+    if (midi.state.buttons[1][0]) {
       this.shape = 'line'
     }
-    if (midi.state.buttons[1][1] > 0) {
+    if (midi.state.buttons[1][1]) {
       this.shape = 'square'
     }
 
     // Program
-    if (midi.state.buttons[0][0] > 0) {
+    if (midi.state.buttons[0][0]) {
       this.program = 'animateBrightness'
     }
-    if (midi.state.buttons[0][1] > 0) {
+    if (midi.state.buttons[0][1]) {
       this.program = 'strobe'
     }
   }

@@ -1,4 +1,4 @@
-import { Input, Output } from 'midi';
+import { Input, MidiMessage, Output } from 'midi';
 import { mkdirSync, readFileSync, writeFile } from 'fs';
 import { resolve } from 'path';
 import { throttle } from 'lodash';
@@ -19,7 +19,7 @@ const MAX_CONNECTION_RETRIES = Infinity;
 interface ControlIDs {
   knobs: number[][];
   buttons: number[][];
-  soloButtons: number[];
+  comboButtons: number[];
   faders: number[];
   masterFader: number;
   bankLeftButton: number;
@@ -37,7 +37,7 @@ const CONTROL_IDs: ControlIDs = {
     [1, 4, 7, 10, 13, 16, 19, 22],
     [3, 6, 9, 12, 15, 18, 21, 24],
   ],
-  soloButtons: [2, 5, 8, 11, 14, 17, 20, 23],
+  comboButtons: [2, 5, 8, 11, 14, 17, 20, 23],
   faders: [19, 23, 27, 31, 49, 53, 57, 61],
   masterFader: 62,
   bankLeftButton: 25,
@@ -47,13 +47,13 @@ const CONTROL_IDs: ControlIDs = {
 
 type ControlState = {
   knobs: number[][];
-  buttons: number[][];
-  soloButtons: number[];
+  buttons: boolean[][];
+  comboButtons: boolean[];
   faders: number[];
   masterFader: number;
-  bankLeftButton: number;
-  bankRightButton: number;
-  soloButton: number;
+  bankLeftButton: boolean;
+  bankRightButton: boolean;
+  soloButton: boolean;
 };
 
 const cacheDirectory = resolve(__dirname, '.cache');
@@ -74,6 +74,9 @@ class MidiMixController {
   private isConnected: boolean = false;
   public readonly state: ControlState;
 
+  private comboButtonListeners: ((index: number, pressed: boolean) => void)[] = [];
+  private buttonListeners: ((row: number, col: number, pressed: boolean) => void)[] = [];
+
   constructor() {
     this.state = currentCache || this.initializeState();
     this.connect();
@@ -82,13 +85,13 @@ class MidiMixController {
   private initializeState(): ControlState {
     return {
       knobs: Array(3).fill(null).map(() => Array(8).fill(0)),
-      buttons: Array(2).fill(null).map(() => Array(8).fill(0)),
-      soloButtons: Array(8).fill(0),
+      buttons: Array(2).fill(null).map(() => Array(8).fill(false)),
+      comboButtons: Array(8).fill(false),
       faders: Array(8).fill(0),
       masterFader: 0,
-      bankLeftButton: 0,
-      bankRightButton: 0,
-      soloButton: 0,
+      bankLeftButton: false,
+      bankRightButton: false,
+      soloButton: false,
     };
   }
 
@@ -124,7 +127,7 @@ class MidiMixController {
     switch (signalCode) {
       case MidiMixSignalCode.BUTTON_PRESS:
       case MidiMixSignalCode.BUTTON_RELEASE:
-        this.updateButtonState(control, signalCode === MidiMixSignalCode.BUTTON_PRESS ? 1 : 0);
+        this.updateButtonState(control, signalCode === MidiMixSignalCode.BUTTON_PRESS);
         break;
       case MidiMixSignalCode.KNOB:
         this.updateKnobState(control, value);
@@ -145,38 +148,34 @@ class MidiMixController {
     return null;
   }
 
-  private updateButtonState(control: number, state: number) {
-    let updated = false;
-
+  private updateButtonState(control: number, pressed: boolean) {
     // Update regular buttons
     const buttonPos = this.findControlPosition(control, CONTROL_IDs.buttons);
     if (buttonPos) {
-      this.state.buttons[buttonPos.row][buttonPos.col] = state;
-      updated = true;
+      this.state.buttons[buttonPos.row][buttonPos.col] = pressed;
+      this.buttonListeners.forEach(listener => listener(buttonPos.row, buttonPos.col, pressed));
+      return;
     }
 
     // Update solo buttons
-    if (!updated) {
-      const soloIndex = CONTROL_IDs.soloButtons.indexOf(control);
-      if (soloIndex !== -1) {
-        this.state.soloButtons[soloIndex] = state;
-        updated = true;
-      }
+    const comboIndex = CONTROL_IDs.comboButtons.indexOf(control);
+    if (comboIndex !== -1) {
+      this.state.comboButtons[comboIndex] = pressed;
+      this.comboButtonListeners.forEach(listener => listener(comboIndex, pressed));
+      return;
     }
 
     // Update special buttons
-    if (!updated) {
-      switch (control) {
-        case CONTROL_IDs.bankLeftButton:
-          this.state.bankLeftButton = state;
-          break;
-        case CONTROL_IDs.bankRightButton:
-          this.state.bankRightButton = state;
-          break;
-        case CONTROL_IDs.soloButton:
-          this.state.soloButton = state;
-          break;
-      }
+    switch (control) {
+      case CONTROL_IDs.bankLeftButton:
+        this.state.bankLeftButton = pressed;
+        break;
+      case CONTROL_IDs.bankRightButton:
+        this.state.bankRightButton = pressed;
+        break;
+      case CONTROL_IDs.soloButton:
+        this.state.soloButton = pressed;
+        break;
     }
   }
 
@@ -212,6 +211,50 @@ class MidiMixController {
       console.error('Failed to save midi state:', e);
     }
   }, 1000);
+
+  onComboButtonPressed(listener: (index: number, pressed: boolean) => void) {
+    this.comboButtonListeners.push(listener);
+  }
+
+  onButtonPressed(listener: (row: number, col: number, pressed: boolean) => void) {
+    this.buttonListeners.push(listener);
+  }
+
+  setButtonLight(row: number, col: number, on: boolean) {
+    const velocity = on ? 127 : 0; // Full velocity for on, 0 for off
+    const control = CONTROL_IDs.buttons[row][col];
+    const noteOnMessage = [MidiMixSignalCode.BUTTON_PRESS, control, velocity] as MidiMessage
+    this.midiOutput.sendMessage(noteOnMessage);
+  }
+
+  setComboButtonLight(index: number, on: boolean) {
+    const velocity = on ? 127 : 0;
+    const control = CONTROL_IDs.comboButtons[index];
+    const noteOnMessage = [MidiMixSignalCode.BUTTON_PRESS, control, velocity] as MidiMessage
+    this.midiOutput.sendMessage(noteOnMessage);
+  }
+
+  turnOffAllLights() {
+    for (let row = 0; row < this.state.buttons.length; row++) {
+      for (let col = 0; col < this.state.buttons[row].length; col++) {
+        this.setButtonLight(row, col, false);
+      }
+    }
+
+    for (let index = 0; index < this.state.comboButtons.length; index++) {
+      this.setComboButtonLight(index, false);
+    }
+  }
+
+  turnOnColumnLights(col: number) {
+    this.turnOffAllLights();
+
+    for (let row = 0; row < this.state.buttons.length; row++) {
+      this.setButtonLight(row, col, true);
+    }
+
+    this.setComboButtonLight(col, true);
+  }
 }
 
 const midi = new MidiMixController();

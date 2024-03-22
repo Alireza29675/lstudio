@@ -2,6 +2,8 @@ import { Color, Mod } from "@lstudio/core"
 import { ClockPayload } from "../../clock"
 import { State, initialState } from "../../state"
 import { StripAdapter } from "./StripAdapter";
+import { mods } from "..";
+import midi from "../../common/midimix";
 
 export abstract class OctaCoreMod implements Mod<ClockPayload, State> {
   state: State = initialState;
@@ -9,6 +11,26 @@ export abstract class OctaCoreMod implements Mod<ClockPayload, State> {
   
   abstract init(): void
   abstract update(clockData: ClockPayload): void
+
+  get midiColumn(): number {
+    return Object.values(mods).findIndex(mod => mod === this);
+  }
+
+  get midi() {
+    return {
+      knobs: {
+        high: midi.state.knobs[0][this.midiColumn],
+        mid: midi.state.knobs[1][this.midiColumn],
+        low: midi.state.knobs[2][this.midiColumn],
+      },
+      buttons: {
+        mute: midi.state.buttons[0][this.midiColumn],
+        rec: midi.state.buttons[1][this.midiColumn],
+      },
+      fader: midi.state.faders[this.midiColumn],
+      masterFader: midi.state.masterFader,
+    }
+  }
   
   onSelected(state: State): void {
     this.state = state;
