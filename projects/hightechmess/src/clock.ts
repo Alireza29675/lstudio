@@ -1,5 +1,6 @@
 import { Clock } from '@lstudio/core'
 import { ExternalMidiInstrument } from './common/midi-instrument'
+import { manualBeatController } from './common/manualBeatController'
 
 export type ClockPayload = {
   index: number,
@@ -18,7 +19,7 @@ export class MidiConnectedClock extends Clock<ClockPayload> {
 
   get isKick(): boolean {
     if (!this.instrument.isConnected) {
-      return this.index % 8 === 0
+      return manualBeatController.isKick
     }
 
     return this.instrument.data.isKick

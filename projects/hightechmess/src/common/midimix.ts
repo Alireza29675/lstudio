@@ -76,6 +76,7 @@ class MidiMixController {
 
   private comboButtonListeners: ((index: number, pressed: boolean) => void)[] = [];
   private buttonListeners: ((row: number, col: number, pressed: boolean) => void)[] = [];
+  private soloButtonListeners: ((pressed: boolean) => void)[] = [];
 
   constructor() {
     this.state = currentCache || this.initializeState();
@@ -174,6 +175,7 @@ class MidiMixController {
         this.state.bankRightButton = pressed;
         break;
       case CONTROL_IDs.soloButton:
+        this.soloButtonListeners.forEach(listener => listener(pressed));
         this.state.soloButton = pressed;
         break;
     }
@@ -220,6 +222,10 @@ class MidiMixController {
     this.buttonListeners.push(listener);
   }
 
+  onSoloButtonPressed(listener: (pressed: boolean) => void) {
+    this.soloButtonListeners.push(listener);
+  }
+
   setButtonLight(row: number, col: number, on: boolean) {
     const velocity = on ? 127 : 0; // Full velocity for on, 0 for off
     const control = CONTROL_IDs.buttons[row][col];
@@ -230,6 +236,13 @@ class MidiMixController {
   setComboButtonLight(index: number, on: boolean) {
     const velocity = on ? 127 : 0;
     const control = CONTROL_IDs.comboButtons[index];
+    const noteOnMessage = [MidiMixSignalCode.BUTTON_PRESS, control, velocity] as MidiMessage
+    this.midiOutput.sendMessage(noteOnMessage);
+  }
+
+  setBankButton(type: 'right' | 'left', on: boolean) {
+    const velocity = on ? 127 : 0;
+    const control = type === 'right' ? CONTROL_IDs.bankRightButton : CONTROL_IDs.bankLeftButton;
     const noteOnMessage = [MidiMixSignalCode.BUTTON_PRESS, control, velocity] as MidiMessage
     this.midiOutput.sendMessage(noteOnMessage);
   }
