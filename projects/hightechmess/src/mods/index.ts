@@ -6,8 +6,10 @@ import { RivalConsolesMod } from "./rival-consoles"
 import { BlackMod } from "./black"
 import { AmbientMod } from "./ambient"
 import { SkyMod } from "./sky"
+import { UbranMod } from "./urban"
 
 export const mods = {
+  urban: new UbranMod,
   sky: new SkyMod,
   ambient: new AmbientMod,
   rivalConsoles: new RivalConsolesMod,
