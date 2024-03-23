@@ -9,8 +9,8 @@ import { SkyMod } from "./sky"
 import { UbranMod } from "./urban"
 
 export const mods = {
-  strobe: new StrobeMod,
   urban: new UbranMod,
+  strobe: new StrobeMod,
   sky: new SkyMod,
   ambient: new AmbientMod,
   rivalConsoles: new RivalConsolesMod,

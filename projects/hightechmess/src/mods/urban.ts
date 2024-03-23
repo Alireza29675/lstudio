@@ -8,26 +8,9 @@ import { throttle } from "lodash";
 const LED_COUNT = 60;
 
 export class UbranMod extends OctaCoreMod {
-  private masks: [number, number][] = [
-    [0, LED_COUNT -10],
-    [0, LED_COUNT],
-    [0, LED_COUNT],
-    [0, LED_COUNT],
-  ]
-
-  private colors = [
-    purple,
-    white,
-    purple,
-    white,
-  ]
-
-  private rotations = [
-    10,
-    20,
-    30,
-    40,
-  ]
+  private masks: [number, number][] = [[0, 0], [0, 0], [0, 0], [0, 0]]
+  private colors = [purple, white, purple, white]
+  private brightnesses = [10, 10, 10, 10];
 
   init() {
     this.setPalette([
@@ -40,16 +23,16 @@ export class UbranMod extends OctaCoreMod {
       violet
     ])
 
+    this.setRotation(10);
     this.setBrightness(255);
   }
 
-  randomizeRotationsAndColors = throttle(() => {
-    this.rotations = this.rotations.map(() => randInt(0, 180));
+  randomizeColors = throttle(() => {
     this.colors = this.colors.map(() => randItem([purple, white, azure, sapphire, violet]));
   }, 1000, { trailing: false });
 
   randomizeMasks(angle: number) {
-    const speed = lerp(0.3, 1, this.midi.fader, easeIn);
+    const speed = lerp(0.1, 1, this.midi.knobs.high, easeIn);
 
     this.masks = this.masks.map((_, maskIndex) => {
       const start = (getNoise(angle * speed, maskIndex * 2) * 2 + 0.5) * LED_COUNT / 2;
@@ -58,30 +41,34 @@ export class UbranMod extends OctaCoreMod {
     });
   }
   
-  update({ angle }: ClockPayload) {
-    const brightness = lerp(0, 255, this.midi.masterFader, easeIn);
+  update({ angle, isKick }: ClockPayload) {
+    if (isKick) this.kick();
+
+    const brightnessRate = lerp(0, 1, this.midi.fader, easeIn);
 
     this.randomizeMasks(angle);
 
     if (this.midi.buttons.rec) {
-      this.randomizeRotationsAndColors();
+      this.randomizeColors();
     }
+
+    const leakage = lerp(0.5, 5, this.midi.knobs.low);
+    this.brightnesses = this.brightnesses.map(brightness => Math.max(10, brightness - leakage));
     
     this.each((strip, stripIndex) => {
       const mask = this.masks[stripIndex];
 
       strip.fill((i) => {
-        if (i < mask[0] || i > mask[1]) {
-          return black;
-        }
-        return this.colors[stripIndex];
+        const ledIsOn = i < mask[0] || i > mask[1];
+        return ledIsOn ? this.colors[stripIndex] : black;
       });
 
-      strip.setRotation(this.rotations[stripIndex]);
-
-      const maskLength = mask[1] - mask[0];
-
-      strip.setBrightness(brightness * (maskLength / LED_COUNT));
+      this.each((strip, i) => strip.setBrightness(this.brightnesses[i] * brightnessRate));
     });
   }
+
+  kick = throttle(() => {
+    const indexToShine = randInt(0, 3);
+    this.brightnesses[indexToShine] = 255;
+  }, 100, { trailing: false });
 }
