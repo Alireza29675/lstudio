@@ -1,50 +1,42 @@
-import { throttle } from "lodash";
 import { OctaCoreMod } from "./common/OctaCoreMod";
-import { State } from "../state";
-import { black, tcsBlue, white } from "./palettes/colors";
-// import { midiInData } from "../common/midi-instrument";
+import { black, tcsBlue, tcsRed, white } from "./palettes/colors";
 import { ClockPayload } from "../clock";
+import { clamp, lerp, randInt } from "./common/math";
+import { throttle } from "lodash";
+
+const MIN_BRIGHTNESS = 2;
 
 export class StrobeMod extends OctaCoreMod {
-  private gateIsOpen = false;
+  private brightnesses = [MIN_BRIGHTNESS, MIN_BRIGHTNESS, MIN_BRIGHTNESS, MIN_BRIGHTNESS];
 
   init() {
-    this.state.palette = [
+    this.setPalette([
       black,
       white,
       tcsBlue,
-    ]
-    this.state.strips.forEach(strip => strip.brightness = 255);
-    this.state.strips.forEach(strip => strip.leds.fill(black));
+      tcsRed
+    ]);
+
+    this.setBrightness(255);
   }
 
-  toggleGate = throttle(() => {
-    this.gateIsOpen = !this.gateIsOpen;
-  }, 1000, { trailing: false });
+  update({ index, isKick }: ClockPayload) {
+    if (isKick) this.kick();
 
-  switchLED = throttle((state: State, isKick: boolean) => {
-    const currentLEDIndex = Math.floor(Math.random() * 4);
-    state.strips[currentLEDIndex].leds.fill(isKick ? tcsBlue : white);
-    state.strips[currentLEDIndex].brightness = 255;
-  }, 40, { trailing: false });
+    this.each((strip, i) => strip.fillNoise([
+      white,
+      tcsBlue,
+      tcsRed
+    ], index / 50, i));
+    
+    const leakage = lerp(1, 5, this.midi.knobs.high);
+    this.brightnesses = this.brightnesses.map(brightness => clamp(brightness - leakage, MIN_BRIGHTNESS, 255));
 
-  update({ index }: ClockPayload) {    
-    if (this.midi.buttons.mute) {
-      this.toggleGate();
-    }
-
-    const gateRotation = this.gateIsOpen ? 20 : 0;
-
-    this.state.strips[0].rotation = 45 - gateRotation
-    this.state.strips[1].rotation = 60 - gateRotation
-    this.state.strips[2].rotation = 120 + gateRotation;
-    this.state.strips[3].rotation = 115 + gateRotation;
-
-    if (index % 10 === 0) this.switchLED(this.state, true)
-    if (index % 7 === 0) this.switchLED(this.state, false)
-
-    this.state.strips.forEach((strip) => {
-      strip.brightness = Math.min(255, Math.max(0, strip.brightness - 5)) * this.midi.fader;
-    });
+    this.each((strip, i) => strip.setBrightness(this.brightnesses[i]));
   }
+
+  kick = throttle(() => {
+    const indexToShine = randInt(0, 3);
+    this.brightnesses[indexToShine] = 255;
+  }, 100, { trailing: false });
 }
