@@ -6,12 +6,14 @@ export type ClockPayload = {
   index: number,
   angle: number,
   isKick: boolean,
+  framesSinceLastKick: number,
   isSnare: boolean,
 }
 export class MidiConnectedClock extends Clock<ClockPayload> {
   private interval?: NodeJS.Timeout
   private index: number = 0
   private instrument = new ExternalMidiInstrument(['Rubix', 'MC-707'])
+  private framesSinceLastKick: number = 0
 
   constructor(private readonly fps: number) {
     super();
@@ -38,11 +40,19 @@ export class MidiConnectedClock extends Clock<ClockPayload> {
     this.interval = setInterval(() => {
       this.index++;
       const angle = (this.index * Math.PI / 100) % (Math.PI * 2);
+      const isKick = this.isKick
+
+      if (isKick) {
+        this.framesSinceLastKick = 0
+      } else {
+        this.framesSinceLastKick++
+      }
 
       this.tick({
         index: this.index,
         angle,
-        isKick: this.isKick,
+        isKick,
+        framesSinceLastKick: this.framesSinceLastKick,
         isSnare: this.isSnare,
       })
     }, ms)

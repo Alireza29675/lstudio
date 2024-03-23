@@ -7,8 +7,12 @@ import { BlackMod } from "./black"
 import { AmbientMod } from "./ambient"
 import { SkyMod } from "./sky"
 import { UbranMod } from "./urban"
+import { SeeYouMod } from "./3cs/see-you"
+import { SlaughterHouseMod } from "./3cs/slaughter-house"
 
 export const mods = {
+  slaughterHouse: new SlaughterHouseMod,
+  seeYou: new SeeYouMod,
   urban: new UbranMod,
   strobe: new StrobeMod,
   sky: new SkyMod,

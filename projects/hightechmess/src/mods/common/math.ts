@@ -84,3 +84,11 @@ export function areNumbersClose(numbers: number[], tolerancePercentage: number =
 
   return true;
 }
+
+export function pi(multiplier: number = 1): number {
+  return Math.PI * multiplier
+}
+
+export function halfPi(multiplier: number = 1): number {
+  return pi(multiplier) / 2
+}

@@ -6,8 +6,16 @@ export class StripAdapter {
   constructor(readonly state: State, readonly stripIndex: number) {
   }
 
-  get strip() {
+  private get strip() {
     return this.state.strips[this.stripIndex];
+  }
+
+  get length(): number {
+    return this.strip.leds.length;
+  }
+
+  get leds() {
+    return this.strip.leds;
   }
 
   setBrightness(brightness: number): void {

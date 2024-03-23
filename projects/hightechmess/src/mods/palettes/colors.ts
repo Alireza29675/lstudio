@@ -11,6 +11,7 @@ export const blue = new Color('#0000ff');
 export const yellow = new Color('#fff700');
 export const sepia = new Color('#704214');
 export const sapphire = new Color('#0f52ba');
+export const darkBlue = new Color('#000006');
 
 export const cyan = new Color('#00ffff');
 export const orange = new Color('#ff8000');
