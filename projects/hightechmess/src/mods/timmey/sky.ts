@@ -1,7 +1,7 @@
-import { OctaCoreMod } from "./common/OctaCoreMod";
-import { black, aqua, white, navy, sapphire, indigo } from "./palettes/colors";
-import { ClockPayload } from "../clock";
-import { easeIn, lerp } from "./common/math";
+import { OctaCoreMod } from "../common/OctaCoreMod";
+import { black, aqua, white, navy, sapphire, indigo } from "../palettes/colors";
+import { ClockPayload } from "../../clock";
+import { easeIn, lerp } from "../common/math";
 
 export class SkyMod extends OctaCoreMod {
   init() {
@@ -23,7 +23,7 @@ export class SkyMod extends OctaCoreMod {
 
     this.setBrightness(brightness);
     this.each((strip, i) => {
-      strip.fillNoise(this.state.palette, index / 50, i / 50);
+      strip.fillNoise(this.state.palette, -index / 100, i / 30);
     });
   }
 }

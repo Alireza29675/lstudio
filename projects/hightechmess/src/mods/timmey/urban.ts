@@ -1,8 +1,8 @@
-import { OctaCoreMod } from "./common/OctaCoreMod";
-import { azure, black, blue, purple, sapphire, violet, white } from "./palettes/colors";
-import { easeIn, lerp, randInt, randItem } from "./common/math";
-import { getNoise } from "./common/noise";
-import { ClockPayload } from "../clock";
+import { OctaCoreMod } from "../common/OctaCoreMod";
+import { azure, black, blue, purple, sapphire, violet, white } from "../palettes/colors";
+import { easeIn, lerp, randInt, randItem } from "../common/math";
+import { getNoise } from "../common/noise";
+import { ClockPayload } from "../../clock";
 import { throttle } from "lodash";
 
 const LED_COUNT = 60;

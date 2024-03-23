@@ -1,27 +1,23 @@
-import { SeaMod } from "./sea"
 import { RainMod } from "./rain"
 import { StrobeMod } from "./strobe"
-import { MetroMod } from "./metro"
 import { RivalConsolesMod } from "./rival-consoles"
-import { BlackMod } from "./black"
-import { AmbientMod } from "./ambient"
-import { SkyMod } from "./sky"
-import { UbranMod } from "./urban"
+import { AmbientMod } from "./timmey/ambient"
+import { SkyMod } from "./timmey/sky"
+import { UbranMod } from "./timmey/urban"
 import { SeeYouMod } from "./3cs/see-you"
 import { SlaughterHouseMod } from "./3cs/slaughter-house"
 import { ZeroSumMod } from "./3cs/zero-sum"
+import { NovayaMod } from "./3cs/novaya"
 
 export const mods = {
-  zeroSum: new ZeroSumMod,
-  slaughterHouse: new SlaughterHouseMod,
   seeYou: new SeeYouMod,
+  slaughterHouse: new SlaughterHouseMod,
+  novaya: new NovayaMod,
   urban: new UbranMod,
-  strobe: new StrobeMod,
   sky: new SkyMod,
+  strobe: new StrobeMod,
+  zeroSum: new ZeroSumMod,
   ambient: new AmbientMod,
   rivalConsoles: new RivalConsolesMod,
-  black: new BlackMod,
   rain: new RainMod,
-  metro: new MetroMod,
-  sea: new SeaMod,
 }

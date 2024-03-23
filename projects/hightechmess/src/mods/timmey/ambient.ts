@@ -1,7 +1,7 @@
-import { OctaCoreMod } from "./common/OctaCoreMod";
-import { black, sepia, white } from "./palettes/colors";
-import { easeIn, lerp, randBool } from "./common/math";
-import { ClockPayload } from "../clock";
+import { OctaCoreMod } from "../common/OctaCoreMod";
+import { black, sepia, white } from "../palettes/colors";
+import { easeIn, lerp, randBool } from "../common/math";
+import { ClockPayload } from "../../clock";
 
 export class AmbientMod extends OctaCoreMod {
   init() {
