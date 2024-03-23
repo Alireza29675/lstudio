@@ -77,6 +77,8 @@ class MidiMixController {
   private comboButtonListeners: ((index: number, pressed: boolean) => void)[] = [];
   private buttonListeners: ((row: number, col: number, pressed: boolean) => void)[] = [];
   private soloButtonListeners: ((pressed: boolean) => void)[] = [];
+  private bankRightButtonListeners: ((pressed: boolean) => void)[] = [];
+  private bankLeftButtonListeners: ((pressed: boolean) => void)[] = [];
 
   constructor() {
     this.state = currentCache || this.initializeState();
@@ -169,9 +171,11 @@ class MidiMixController {
     // Update special buttons
     switch (control) {
       case CONTROL_IDs.bankLeftButton:
+        this.bankLeftButtonListeners.forEach(listener => listener(pressed));
         this.state.bankLeftButton = pressed;
         break;
       case CONTROL_IDs.bankRightButton:
+        this.bankRightButtonListeners.forEach(listener => listener(pressed));
         this.state.bankRightButton = pressed;
         break;
       case CONTROL_IDs.soloButton:
@@ -224,6 +228,14 @@ class MidiMixController {
 
   onSoloButtonPressed(listener: (pressed: boolean) => void) {
     this.soloButtonListeners.push(listener);
+  }
+
+  onBankRightButtonPressed(listener: (pressed: boolean) => void) {
+    this.bankRightButtonListeners.push(listener);
+  }
+
+  onBankLeftButtonPressed(listener: (pressed: boolean) => void) {
+    this.bankLeftButtonListeners.push(listener);
   }
 
   setButtonLight(row: number, col: number, on: boolean) {

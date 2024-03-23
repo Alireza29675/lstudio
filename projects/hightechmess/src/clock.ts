@@ -53,4 +53,4 @@ export class MidiConnectedClock extends Clock<ClockPayload> {
   }
 }
 
-export const clock = new MidiConnectedClock(30)
+export const clock = new MidiConnectedClock(60)

@@ -1,4 +1,4 @@
-import { areNumbersClose, avg } from "../mods/common/math";
+import { areNumbersClose, avg, lerp } from "../mods/common/math";
 import midi from "./midimix";
 
 const MIN_FPS_SUPPORTED = 20;
@@ -7,11 +7,18 @@ const DURATION_OF_ONE_FRAME = 1000 / MIN_FPS_SUPPORTED;
 class ManualBeatController {
   private hits = [0, 0, 0, 0];
   
+  private isKicking = false;
   private delayBetweenHits = 0;
   private bpmHitStart = 0;
 
   constructor() {
     midi.onSoloButtonPressed((pressed) => pressed && this.hit());
+    midi.onBankRightButtonPressed((pressed) => {
+      if (pressed) {
+        this.isKicking = false
+        midi.setBankButton('right', false)
+      }
+    });
   }
 
   get bpm() {
@@ -19,9 +26,12 @@ class ManualBeatController {
   }
 
   isKick() {
-    const split = 1;
+    if (!this.isKicking) return false;
+    const split = Math.floor(lerp(1, 4.99, midi.state.masterFader));
     const currentTime = Date.now();
-    return Math.abs(currentTime - this.bpmHitStart) % (this.delayBetweenHits / split) < DURATION_OF_ONE_FRAME
+    const isKick = Math.abs(currentTime - this.bpmHitStart) % (this.delayBetweenHits / split) < DURATION_OF_ONE_FRAME;
+    midi.setBankButton('right', isKick)
+    return isKick
   }
 
   hit() {
@@ -42,8 +52,9 @@ class ManualBeatController {
     if (timeToCalculateBPM) {
       this.delayBetweenHits = avg(timeDifferences)
       this.bpmHitStart = currentTime;
+      this.isKicking = true;
 
-      console.log(`BPM: ${this.bpm} (average of ${timeDifferences.length} hits) starting from ${this.bpmHitStart}`);
+      console.log(`🚨 BPM: ${this.bpm}`);
     }
   }
 }
