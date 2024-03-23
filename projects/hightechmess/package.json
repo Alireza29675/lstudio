@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/midi": "^2.0.3",
     "@types/ws": "^8.5.10",
+    "chaser": "^0.4.3",
     "lodash": "^4.17.21",
     "midi": "^2.0.0",
     "react": "^18.2.0",

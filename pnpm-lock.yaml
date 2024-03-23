@@ -133,6 +133,9 @@ importers:
       '@types/ws':
         specifier: ^8.5.10
         version: 8.5.10
+      chaser:
+        specifier: ^0.4.3
+        version: 0.4.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1309,6 +1312,10 @@ packages:
   /chardet@0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
     dev: true
+
+  /chaser@0.4.3:
+    resolution: {integrity: sha512-NHddYZZbWs6zDKEDK99HcXPcesQ/bX7iHFz7fmUHkl40j9Zs84YRRNvJQ/bJwqdqOYazjoEzvyE1VtB5Xll6lg==}
+    dev: false
 
   /chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}

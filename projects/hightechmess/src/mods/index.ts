@@ -9,8 +9,10 @@ import { SkyMod } from "./sky"
 import { UbranMod } from "./urban"
 import { SeeYouMod } from "./3cs/see-you"
 import { SlaughterHouseMod } from "./3cs/slaughter-house"
+import { ZeroSumMod } from "./3cs/zero-sum"
 
 export const mods = {
+  zeroSum: new ZeroSumMod,
   slaughterHouse: new SlaughterHouseMod,
   seeYou: new SeeYouMod,
   urban: new UbranMod,
