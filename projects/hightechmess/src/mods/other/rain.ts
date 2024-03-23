@@ -1,10 +1,10 @@
 import { throttle } from "lodash";
-import { OctaCoreMod } from "./common/OctaCoreMod";
-import { aqua, black, darkGrey, white } from "./palettes/colors";
+import { OctaCoreMod } from "../common/OctaCoreMod";
+import { black, darkBlue, grey, teal, white } from "../palettes/colors";
 import { Color } from "@lstudio/core";
-import { randInt } from "./common/math";
+import { easeIn, lerp, randInt, randItem } from "../common/math";
 
-const DEFAULT_BRIGTHNESS = 20;
+const DEFAULT_BRIGTHNESS = 5;
 
 export class RainMod extends OctaCoreMod {
   private rainPatterns: Color[][] = Array(4).fill(0).map(() => Array(60).fill(black));
@@ -14,30 +14,28 @@ export class RainMod extends OctaCoreMod {
     this.setPalette([
       black,
       white,
-      darkGrey,
-      aqua,
+      grey,
+      darkBlue,
+      teal
     ])
 
-    this.each(strip => {
-      strip.setBrightness(DEFAULT_BRIGTHNESS);
-      strip.setRotation(20)
-    });
+    this.setBrightness(DEFAULT_BRIGTHNESS);
+    this.setRotation(20)
   }
 
   update() {
-    const raininess = this.midi.fader * 0.2;
-    const shouldMakeLightning = this.midi.buttons.mute;
-
-    if (shouldMakeLightning) this.makeLightning();
+    if (this.midi.buttons.mute) this.makeLightning();
+    
+    const raininess = lerp(0, 0.2, this.midi.fader, easeIn);
 
     this.rainPatterns.forEach(pattern => {
-      pattern.push(Math.random() < raininess ? darkGrey : black);
+      pattern.push(Math.random() < raininess ? grey : black);
       pattern.shift();
     })
 
     this.state.strips.forEach((strip, index) => {
       strip.brightness = this.isLightning ? 255 : DEFAULT_BRIGTHNESS;
-      strip.leds = this.rainPatterns[index].map(led => this.isLightning ? white : led);
+      strip.leds = this.rainPatterns[index].map(led => this.isLightning ? randItem([grey, darkBlue, teal]) : led);
     })
   }
 
