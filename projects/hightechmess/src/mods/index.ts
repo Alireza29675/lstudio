@@ -8,6 +8,7 @@ import { SeeYouMod } from "./3cs/see-you"
 import { SlaughterHouseMod } from "./3cs/slaughter-house"
 import { ZeroSumMod } from "./3cs/zero-sum"
 import { NovayaMod } from "./3cs/novaya"
+import { LiveCodingMod } from "./other/live-coding"
 
 export const threeColoredSquareMods = {
   seeYou: new SeeYouMod,
@@ -23,6 +24,7 @@ export const timmeyMods = {
 }
 
 export const otherMods = {
+  liveCoding: new LiveCodingMod,
   rain: new RainMod,
   strobe: new StrobeMod,
   rivalConsoles: new RivalConsolesMod,
