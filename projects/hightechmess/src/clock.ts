@@ -19,7 +19,7 @@ export class MidiConnectedClock extends Clock<ClockPayload> {
 
   get isKick(): boolean {
     if (!this.instrument.isConnected) {
-      return manualBeatController.isKick
+      return manualBeatController.isKick()
     }
 
     return this.instrument.data.isKick

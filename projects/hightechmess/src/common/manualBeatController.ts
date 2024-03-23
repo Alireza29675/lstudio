@@ -1,64 +1,50 @@
+import { areNumbersClose, avg } from "../mods/common/math";
 import midi from "./midimix";
 
-class ManualBeatController {
-  private hitTimes: number[] = [];
-  private intervalId: NodeJS.Timeout | null = null;
-  public isKick: boolean = false;
+const MIN_FPS_SUPPORTED = 20;
+const DURATION_OF_ONE_FRAME = 1000 / MIN_FPS_SUPPORTED;
 
-  private kickDuration: number = 60;
-  private latencyOffset: number = 120;
+class ManualBeatController {
+  private hits = [0, 0, 0, 0];
+  
+  private delayBetweenHits = 0;
+  private bpmHitStart = 0;
 
   constructor() {
-    this.generateKick = this.generateKick.bind(this);
     midi.onSoloButtonPressed((pressed) => pressed && this.hit());
   }
 
+  get bpm() {
+    return Math.floor(60000 / this.delayBetweenHits);
+  }
+
+  isKick() {
+    const split = 1;
+    const currentTime = Date.now();
+    return Math.abs(currentTime - this.bpmHitStart) % (this.delayBetweenHits / split) < DURATION_OF_ONE_FRAME
+  }
+
   hit() {
-    const currentTime = Date.now() - this.latencyOffset;
-    this.hitTimes.push(currentTime);
+    const currentTime = Date.now()
 
-    if (this.hitTimes.length > 3) {
-      this.hitTimes.shift();
+    // shifting one timestamp to the top
+    this.hits.push(currentTime);
+    this.hits.shift();
+
+    // first we create an array of time differences between hits
+    const timeDifferences = this.hits.reduce((acc, timestamp, i, arr) => {
+      if (i === 0) return acc;
+      return [...acc, timestamp - arr[i - 1]];
+    }, [] as number[]);
+
+    const timeToCalculateBPM = areNumbersClose(timeDifferences);
+    
+    if (timeToCalculateBPM) {
+      this.delayBetweenHits = avg(timeDifferences)
+      this.bpmHitStart = currentTime;
+
+      console.log(`BPM: ${this.bpm} (average of ${timeDifferences.length} hits) starting from ${this.bpmHitStart}`);
     }
-
-    if (this.hitTimes.length >= 3) {
-      this.calculateBPM();
-    }
-  }
-
-  private calculateBPM() {
-    const timeDifferences = [];
-    for (let i = 1; i < this.hitTimes.length; i++) {
-      timeDifferences.push(this.hitTimes[i] - this.hitTimes[i - 1]);
-    }
-
-    const averageDifference = timeDifferences.reduce((sum, diff) => sum + diff, 0) / timeDifferences.length;
-    const bpm = 60000 / averageDifference;
-
-    this.restartKicking(bpm);
-  }
-
-  private restartKicking(bpm: number) {
-    if (this.intervalId) clearInterval(this.intervalId);
-
-    const kickInterval = 60000 / bpm;
-    this.intervalId = setInterval(this.generateKick, kickInterval); 
-  }
-
-  private generateKick() {
-    this.isKick = true;
-    midi.setBankButton('left', true);
-
-    setTimeout(() => {
-      this.isKick = false;
-      midi.setBankButton('left', false);
-    }, this.kickDuration);
-  }
-
-  stopKicking() {
-    if (this.intervalId) clearInterval(this.intervalId);
-    this.intervalId = null;
-    this.hitTimes = [];
   }
 }
 

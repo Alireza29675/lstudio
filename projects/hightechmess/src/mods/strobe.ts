@@ -1,13 +1,11 @@
 import { OctaCoreMod } from "./common/OctaCoreMod";
 import { black, tcsBlue, tcsRed, white } from "./palettes/colors";
 import { ClockPayload } from "../clock";
-import { clamp, lerp, randInt } from "./common/math";
+import { clamp, easeOut, lerp, randInt } from "./common/math";
 import { throttle } from "lodash";
 
-const MIN_BRIGHTNESS = 2;
-
 export class StrobeMod extends OctaCoreMod {
-  private brightnesses = [MIN_BRIGHTNESS, MIN_BRIGHTNESS, MIN_BRIGHTNESS, MIN_BRIGHTNESS];
+  private brightnesses = [0, 0, 0, 0];
 
   init() {
     this.setPalette([
@@ -25,12 +23,12 @@ export class StrobeMod extends OctaCoreMod {
 
     this.each((strip, i) => strip.fillNoise([
       white,
-      tcsBlue,
-      tcsRed
+      tcsBlue
     ], index / 50, i));
     
-    const leakage = lerp(1, 5, this.midi.knobs.high);
-    this.brightnesses = this.brightnesses.map(brightness => clamp(brightness - leakage, MIN_BRIGHTNESS, 255));
+    const strobeness = lerp(255, 5, this.midi.fader, easeOut);
+    const leakage = lerp(0.5, 5, this.midi.knobs.high);
+    this.brightnesses = this.brightnesses.map(brightness => clamp(brightness - leakage, strobeness, 255));
 
     this.each((strip, i) => strip.setBrightness(this.brightnesses[i]));
   }

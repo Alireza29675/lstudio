@@ -62,3 +62,25 @@ export function degToRad(deg: number): number {
 export function radToDeg(rad: number): number {
   return rad * 180 / Math.PI
 }
+
+export function avg(numbers: number[]): number {
+  return numbers.reduce((acc, cur) => acc + cur, 0) / numbers.length;
+}
+
+export function areNumbersClose(numbers: number[], tolerancePercentage: number = 0.1): boolean {
+  if (numbers.length < 2) {
+    return true;
+  }
+
+  const average = avg(numbers);
+  const tolerance = average * tolerancePercentage;
+
+  for (let i = 0; i < numbers.length; i++) {
+    const deviation = Math.abs(numbers[i] - average); // Absolute deviation from the average
+    if (deviation > tolerance) {
+      return false;
+    }
+  }
+
+  return true;
+}
