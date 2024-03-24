@@ -13,8 +13,10 @@ import { CornersMod } from "./teder/corners"
 import { HeavyStrobeMod } from "./teder/heavy-strobe"
 import { TurbinMod } from "./teder/turbin"
 import { ElevatorsMod } from "./teder/elevators"
+import { MemoriesOfAnAndroidMod } from "./timmey/memories-of-an-android"
 
 export const timmeyMods = {
+  memoriesOfAnAndroid: new MemoriesOfAnAndroidMod,
   ambient: new AmbientMod,
   sky: new SkyMod,
   urban: new UbranMod,
