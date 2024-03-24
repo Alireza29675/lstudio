@@ -39,7 +39,7 @@ export class MidiConnectedClock extends Clock<ClockPayload> {
     const ms = Math.round(1000 / this.fps)
     this.interval = setInterval(() => {
       this.index++;
-      const angle = (this.index * Math.PI / 100) % (Math.PI * 2);
+      const angle = ((this.index / 60) % 60) * Math.PI * 2
       const isKick = this.isKick
 
       if (isKick) {

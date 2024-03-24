@@ -14,6 +14,12 @@ import { HeavyStrobeMod } from "./teder/heavy-strobe"
 import { TurbinMod } from "./teder/turbin"
 import { ElevatorsMod } from "./teder/elevators"
 
+export const timmeyMods = {
+  ambient: new AmbientMod,
+  sky: new SkyMod,
+  urban: new UbranMod,
+}
+
 export const threeColoredSquareMods = {
   seeYou: new SeeYouMod,
   slaughterHouse: new SlaughterHouseMod,
@@ -21,10 +27,11 @@ export const threeColoredSquareMods = {
   novaya: new NovayaMod,
 }
 
-export const timmeyMods = {
-  ambient: new AmbientMod,
-  sky: new SkyMod,
-  urban: new UbranMod,
+export const otherMods = {
+  liveCoding: new LiveCodingMod,
+  rain: new RainMod,
+  strobe: new StrobeMod,
+  rivalConsoles: new RivalConsolesMod,
 }
 
 export const tederMods = {
@@ -35,11 +42,4 @@ export const tederMods = {
   liveCoding: new LiveCodingMod,
 }
 
-export const otherMods = {
-  liveCoding: new LiveCodingMod,
-  strobe: new StrobeMod,
-  rain: new RainMod,
-  rivalConsoles: new RivalConsolesMod,
-}
-
-export const mods = tederMods
+export const mods = timmeyMods
