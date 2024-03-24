@@ -38,10 +38,10 @@ export const otherMods = {
 
 export const tederMods = {
   elevators: new ElevatorsMod,
-  turbin: new TurbinMod,
-  cornersMod: new CornersMod,
   heavyStrobe: new HeavyStrobeMod,
+  cornersMod: new CornersMod,
+  turbin: new TurbinMod,
   liveCoding: new LiveCodingMod,
 }
 
-export const mods = timmeyMods
+export const mods = tederMods

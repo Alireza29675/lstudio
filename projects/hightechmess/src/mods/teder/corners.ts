@@ -1,5 +1,5 @@
 import { ClockPayload } from "../../clock";
-import { randInt } from "../common/math";
+import { easeIn, lerp, randInt } from "../common/math";
 import { black, white } from "../palettes/colors";
 import { CrossMod } from "./CrossMod";
 
@@ -10,7 +10,10 @@ export class CornersMod extends CrossMod {
 
   update({ isKick }: ClockPayload) {
     this.setCrossRotation(0)
+    const length = lerp(1, 30, this.midi.fader, easeIn);
     
+    const allHitting = this.midi.buttons.mute;
+
     if (isKick) {
       this.numHits++;
       if (this.numHits > 16) {
@@ -19,11 +22,23 @@ export class CornersMod extends CrossMod {
         this.currentCol = randInt(0, 1);
       }
 
-      this.hit(this.currentRow, this.currentCol, 255, (i: number) => {
-        if (i < 4) return white;
-        if (i > 55) return white;
-        return black;
-      });
+      if (allHitting) {
+        for (let row = 0; row < 2; row++) {
+          for (let col = 0; col < 2; col++) {
+            this.hit(row, col, 255, (i: number) => {
+              if (i < length) return white;
+              if (i > 59 - length) return white;
+              return black;
+            });
+          }
+        }
+      } else {
+        this.hit(this.currentRow, this.currentCol, 255, (i: number) => {
+          if (i < length) return white;
+          if (i > 59 - length) return white;
+          return black;
+        });
+      }
     }
 
     this.updateCrosses();
