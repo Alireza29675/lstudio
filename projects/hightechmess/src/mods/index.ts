@@ -9,8 +9,9 @@ import { SlaughterHouseMod } from "./3cs/slaughter-house"
 import { ZeroSumMod } from "./3cs/zero-sum"
 import { NovayaMod } from "./3cs/novaya"
 import { LiveCodingMod } from "./other/live-coding"
-import { BuildUpMod } from "./teder/build-up"
+import { CornersMod } from "./teder/corners"
 import { HeavyStrobeMod } from "./teder/heavy-strobe"
+import { TurbinMod } from "./teder/turbin"
 
 export const threeColoredSquareMods = {
   seeYou: new SeeYouMod,
@@ -26,7 +27,9 @@ export const timmeyMods = {
 }
 
 export const tederMods = {
-  buildUp: new BuildUpMod,
+  zeroSum: new ZeroSumMod,
+  turbin: new TurbinMod,
+  cornersMod: new CornersMod,
   heavyStrobe: new HeavyStrobeMod,
   liveCoding: new LiveCodingMod,
 }
