@@ -1,7 +1,7 @@
 import { Color } from "@lstudio/core";
 import { OctaCoreMod } from "../common/OctaCoreMod";
 import { StripAdapter } from "../common/StripAdapter";
-import { black, blue, crimson, white } from "../palettes/colors";
+import { black, blue, crimson, mint, white } from "../palettes/colors";
 
 export abstract class CrossMod extends OctaCoreMod {
   public crosses: StripAdapter[][] = []
@@ -16,6 +16,7 @@ export abstract class CrossMod extends OctaCoreMod {
       white,
       blue,
       crimson,
+      mint
     ])
 
     this.setBrightness(0);

@@ -1,5 +1,5 @@
 import { OctaCoreMod } from "../common/OctaCoreMod";
-import { black, aqua, white } from "../palettes/colors";
+import { black, green, white } from "../palettes/colors";
 import { ClockPayload } from "../../clock";
 import { clamp, easeIn, lerp, randInt } from "../common/math";
 import { throttle } from "lodash";
@@ -15,11 +15,11 @@ export class StrobeMod extends OctaCoreMod {
     this.setPalette([
       black,
       white,
-      aqua,
+      green,
     ]);
 
     this.setBrightness(255);
-    this.fill(aqua)
+    this.fill(green)
   }
 
   update({ isKick }: ClockPayload) {

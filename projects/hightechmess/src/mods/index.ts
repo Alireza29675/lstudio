@@ -24,6 +24,7 @@ export const timmeyMods = {
 }
 
 export const threeColoredSquareMods = {
+  strobe: new StrobeMod,
   seeYou: new SeeYouMod,
   slaughterHouse: new SlaughterHouseMod,
   zeroSum: new ZeroSumMod,
