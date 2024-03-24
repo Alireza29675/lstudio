@@ -16,11 +16,11 @@ import { ElevatorsMod } from "./teder/elevators"
 import { MemoriesOfAnAndroidMod } from "./timmey/memories-of-an-android"
 
 export const timmeyMods = {
-  memoriesOfAnAndroid: new MemoriesOfAnAndroidMod,
   ambient: new AmbientMod,
   sky: new SkyMod,
   urban: new UbranMod,
   strobe: new StrobeMod,
+  memoriesOfAnAndroid: new MemoriesOfAnAndroidMod,
 }
 
 export const threeColoredSquareMods = {

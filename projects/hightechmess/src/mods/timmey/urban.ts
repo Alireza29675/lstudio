@@ -1,5 +1,5 @@
 import { OctaCoreMod } from "../common/OctaCoreMod";
-import { azure, black, blue, purple, sapphire, violet, white } from "../palettes/colors";
+import { azure, black, blue, purple, sapphire, tangerine, violet, white } from "../palettes/colors";
 import { easeIn, lerp, randInt, randItem } from "../common/math";
 import { getNoise } from "../common/noise";
 import { ClockPayload } from "../../clock";
@@ -20,7 +20,8 @@ export class UbranMod extends OctaCoreMod {
       blue,
       sapphire,
       azure,
-      violet
+      violet,
+      tangerine
     ])
 
     this.setRotation(10);
@@ -28,7 +29,7 @@ export class UbranMod extends OctaCoreMod {
   }
 
   randomizeColors = throttle(() => {
-    this.colors = this.colors.map(() => randItem([purple, white, azure, sapphire, violet]));
+    this.colors = this.colors.map(() => randItem([purple, white, azure, sapphire, violet, tangerine]));
   }, 1000, { trailing: false });
 
   randomizeMasks(angle: number) {
@@ -44,7 +45,7 @@ export class UbranMod extends OctaCoreMod {
   update({ angle, isKick }: ClockPayload) {
     if (isKick) this.kick();
 
-    const brightnessRate = lerp(0, 1, this.midi.fader, easeIn);
+    const baseBrightness = lerp(0, 40, this.midi.fader, easeIn);
 
     this.randomizeMasks(angle);
 
@@ -53,7 +54,7 @@ export class UbranMod extends OctaCoreMod {
     }
 
     const leakage = lerp(0.5, 5, this.midi.knobs.low);
-    this.brightnesses = this.brightnesses.map(brightness => Math.max(10, brightness - leakage));
+    this.brightnesses = this.brightnesses.map(brightness => Math.max(0, brightness - leakage));
     
     this.each((strip, stripIndex) => {
       const mask = this.masks[stripIndex];
@@ -63,7 +64,7 @@ export class UbranMod extends OctaCoreMod {
         return ledIsOn ? this.colors[stripIndex] : black;
       });
 
-      this.each((strip, i) => strip.setBrightness(this.brightnesses[i] * brightnessRate));
+      this.each((strip, i) => strip.setBrightness(baseBrightness + this.brightnesses[i]));
     });
   }
 
