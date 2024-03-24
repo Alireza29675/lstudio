@@ -1,5 +1,5 @@
 import { RainMod } from "./other/rain"
-import { StrobeMod } from "./strobe"
+import { StrobeMod } from "./timmey/strobe"
 import { RivalConsolesMod } from "./rival-consoles"
 import { AmbientMod } from "./timmey/ambient"
 import { SkyMod } from "./timmey/sky"
@@ -18,6 +18,7 @@ export const timmeyMods = {
   ambient: new AmbientMod,
   sky: new SkyMod,
   urban: new UbranMod,
+  strobe: new StrobeMod,
 }
 
 export const threeColoredSquareMods = {
@@ -30,7 +31,6 @@ export const threeColoredSquareMods = {
 export const otherMods = {
   liveCoding: new LiveCodingMod,
   rain: new RainMod,
-  strobe: new StrobeMod,
   rivalConsoles: new RivalConsolesMod,
 }
 

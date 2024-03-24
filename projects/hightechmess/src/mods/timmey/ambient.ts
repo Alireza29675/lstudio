@@ -1,6 +1,6 @@
 import { OctaCoreMod } from "../common/OctaCoreMod";
 import { black, sepia, sun, tangerine, white } from "../palettes/colors";
-import { easeIn, lerp, randBool } from "../common/math";
+import { easeIn, easeInOut, lerp, randBool } from "../common/math";
 import { ClockPayload } from "../../clock";
 import { throttle } from "lodash";
 
@@ -28,12 +28,11 @@ export class AmbientMod extends OctaCoreMod {
   }, 1000, { trailing: false });
   
   update({ angle }: ClockPayload) {
-    const masterBrightness = lerp(0.7, 1, this.midi.fader, easeIn);
-    const amplitude = lerp(0, 200, this.midi.knobs.high, easeIn);
+    const noisiness = lerp(1, 0, this.midi.knobs.high, easeInOut);
     const speed = lerp(0.5, 5, this.midi.knobs.mid, easeIn);
     const divergency = lerp(Math.PI / 2, 0, this.midi.knobs.low);
-
-    const noisiness = lerp(1, 0, this.midi.fader);
+    
+    const amplitude = lerp(0, 200, this.midi.fader, easeIn);
 
     if (this.midi.buttons.mute) {
       this.switchColor();
@@ -44,7 +43,7 @@ export class AmbientMod extends OctaCoreMod {
 
       strip.fill(() => randBool(noisiness) ? this.color : black);
 
-      strip.setBrightness(masterBrightness * (brightness + amplitude * 1.5));
+      strip.setBrightness(brightness + amplitude * 1.5);
     });
   }
 }
