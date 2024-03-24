@@ -26,6 +26,10 @@ export abstract class CrossMod extends OctaCoreMod {
     ]
   }
 
+  setAllCrossesBrightness(brightness: number) {
+    this.brightnesses = this.brightnesses.map(row => row.map(() => brightness))
+  }
+
   hit(row: number, col: number, brightness: number, colorFn?: (i: number) => Color) {
     this.brightnesses[row][col] = brightness
     if (colorFn) this.crosses[row][col].fill(colorFn)

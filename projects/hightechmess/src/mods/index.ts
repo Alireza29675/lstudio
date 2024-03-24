@@ -12,6 +12,7 @@ import { LiveCodingMod } from "./other/live-coding"
 import { CornersMod } from "./teder/corners"
 import { HeavyStrobeMod } from "./teder/heavy-strobe"
 import { TurbinMod } from "./teder/turbin"
+import { ElevatorsMod } from "./teder/elevators"
 
 export const threeColoredSquareMods = {
   seeYou: new SeeYouMod,
@@ -27,7 +28,7 @@ export const timmeyMods = {
 }
 
 export const tederMods = {
-  zeroSum: new ZeroSumMod,
+  elevators: new ElevatorsMod,
   turbin: new TurbinMod,
   cornersMod: new CornersMod,
   heavyStrobe: new HeavyStrobeMod,
