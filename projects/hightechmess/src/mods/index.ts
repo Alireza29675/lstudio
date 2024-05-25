@@ -1,4 +1,5 @@
 import { RainMod } from "./other/rain"
+import { DaylightMod } from "./other/daylight"
 import { StrobeMod } from "./timmey/strobe"
 import { RivalConsolesMod } from "./rival-consoles"
 import { AmbientMod } from "./timmey/ambient"
@@ -14,6 +15,8 @@ import { HeavyStrobeMod } from "./teder/heavy-strobe"
 import { TurbinMod } from "./teder/turbin"
 import { ElevatorsMod } from "./teder/elevators"
 import { MemoriesOfAnAndroidMod } from "./timmey/memories-of-an-android"
+import { SimplePhotographyMod } from "./other/simple-photography"
+import { WeatherReactiveMod } from "./other/weather-reactive"
 
 export const timmeyMods = {
   ambient: new AmbientMod,
@@ -31,12 +34,6 @@ export const threeColoredSquareMods = {
   novaya: new NovayaMod,
 }
 
-export const otherMods = {
-  liveCoding: new LiveCodingMod,
-  rain: new RainMod,
-  rivalConsoles: new RivalConsolesMod,
-}
-
 export const tederMods = {
   elevators: new ElevatorsMod,
   heavyStrobe: new HeavyStrobeMod,
@@ -45,4 +42,13 @@ export const tederMods = {
   liveCoding: new LiveCodingMod,
 }
 
-export const mods = tederMods
+export const otherMods = {
+  weatherReactive: new WeatherReactiveMod,
+  simplePhotography: new SimplePhotographyMod,
+  daylight: new DaylightMod,
+  liveCoding: new LiveCodingMod,
+  rain: new RainMod,
+  rivalConsoles: new RivalConsolesMod,
+}
+
+export const mods = otherMods
