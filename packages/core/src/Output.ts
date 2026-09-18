@@ -7,11 +7,10 @@ export abstract class Ouput<C, S extends GenericState> {
     readonly project: Project<C, S, string>,
     readonly clock: Clock<C>
   ) {
-    this.clock.subscribe((data) => {
-      this.project.tick(data)
-      this.render(this.project.state)
-    })
+    this.clock.subscribe(() => {
+      this.render(this.project.state);
+    });
   }
 
-  abstract render(state: S): void
+  abstract render(state: S): void;
 }

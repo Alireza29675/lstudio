@@ -2,13 +2,26 @@ import { OctaCoreOutput } from ".";
 import { MidiConnectedClock } from "../../clock";
 import { OctaCoreProject } from "../../project";
 
-export const createSyncedSocketOutput = async (project: OctaCoreProject, clock: MidiConnectedClock, addresses: string[]) => {
-  const ready = addresses.map((address, i) => {
-    const output = new OctaCoreOutput({ project, clock, url: address, stripIndex: i });
-    return output.waitToGetReady;
+export const createSyncedSocketOutput = (
+  project: OctaCoreProject,
+  clock: MidiConnectedClock,
+  addresses: string[]
+) => {
+  // Advance the shared project exactly once per frame.
+  clock.subscribe((clockData) => {
+    project.tick(clockData);
   });
 
-  await Promise.all(ready);
+  addresses.forEach((address, stripIndex) => {
+    new OctaCoreOutput({
+      project,
+      clock,
+      url: address,
+      stripIndex,
+    });
+  });
 
+  // Outputs connect independently. A missing controller must not freeze the
+  // clock or the other controllers.
   clock.start();
-}
+};
