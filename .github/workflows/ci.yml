@@ -26,5 +26,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build core dependency
+        run: pnpm --filter @lstudio/core build
+
       - name: Typecheck hightechmess
         run: pnpm --filter @projects/hightechmess typecheck
