@@ -1,11 +1,11 @@
 import { resolve } from "path";
-import dotenv from "dotenv";
 
 import { clock } from "./clock";
+import { loadEnvFile } from "./common/loadEnvFile";
 import { createSyncedSocketOutput } from "./ouputs/socket/createSyncSocketOutput";
 import { project } from "./project";
 
-dotenv.config({ path: resolve(__dirname, "../.env") });
+loadEnvFile(resolve(__dirname, "../.env"));
 
 const configuredHosts = process.env.OCTACORE_HOSTS
   ?.split(",")
