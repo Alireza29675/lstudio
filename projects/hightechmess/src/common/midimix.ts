@@ -77,6 +77,16 @@ class MidiMixController {
   private outputConnected = false;
   private reconnectTimer: NodeJS.Timeout | null = null;
 
+  private readonly buttonLights = Array.from(
+    { length: 2 },
+    () => Array(8).fill(false) as boolean[]
+  );
+  private readonly comboButtonLights = Array(8).fill(false) as boolean[];
+  private readonly bankButtonLights = {
+    left: false,
+    right: false,
+  };
+
   public readonly state: ControlState;
 
   private comboButtonListeners: ((index: number, pressed: boolean) => void)[] = [];
@@ -153,6 +163,7 @@ class MidiMixController {
       this.midiOutput.openPort(port);
       this.outputConnected = true;
       console.log("🎛️ Connected to AKAI MIDImix Output");
+      this.syncLights();
     } catch (error) {
       console.error("Failed to open AKAI MIDImix Output:", error);
     }
@@ -301,6 +312,63 @@ class MidiMixController {
     }
   }
 
+  private syncLights() {
+    for (let row = 0; row < this.buttonLights.length; row++) {
+      for (let col = 0; col < this.buttonLights[row].length; col++) {
+        this.sendButtonLight(row, col, this.buttonLights[row][col]);
+      }
+    }
+
+    for (let index = 0; index < this.comboButtonLights.length; index++) {
+      this.sendComboButtonLight(index, this.comboButtonLights[index]);
+    }
+
+    this.sendBankButtonLight("left", this.bankButtonLights.left);
+    this.sendBankButtonLight("right", this.bankButtonLights.right);
+  }
+
+  private sendButtonLight(row: number, col: number, on: boolean) {
+    const control = CONTROL_IDs.buttons[row]?.[col];
+    if (control === undefined) {
+      return;
+    }
+
+    const velocity = on ? 127 : 0;
+    this.sendLightMessage([
+      MidiMixSignalCode.BUTTON_PRESS,
+      control,
+      velocity,
+    ] as MidiMessage);
+  }
+
+  private sendComboButtonLight(index: number, on: boolean) {
+    const control = CONTROL_IDs.comboButtons[index];
+    if (control === undefined) {
+      return;
+    }
+
+    const velocity = on ? 127 : 0;
+    this.sendLightMessage([
+      MidiMixSignalCode.BUTTON_PRESS,
+      control,
+      velocity,
+    ] as MidiMessage);
+  }
+
+  private sendBankButtonLight(type: "right" | "left", on: boolean) {
+    const control =
+      type === "right"
+        ? CONTROL_IDs.bankRightButton
+        : CONTROL_IDs.bankLeftButton;
+
+    const velocity = on ? 127 : 0;
+    this.sendLightMessage([
+      MidiMixSignalCode.BUTTON_PRESS,
+      control,
+      velocity,
+    ] as MidiMessage);
+  }
+
   onComboButtonPressed(
     listener: (index: number, pressed: boolean) => void
   ) {
@@ -326,45 +394,26 @@ class MidiMixController {
   }
 
   setButtonLight(row: number, col: number, on: boolean) {
-    const control = CONTROL_IDs.buttons[row]?.[col];
-    if (control === undefined) {
+    if (this.buttonLights[row]?.[col] === undefined) {
       return;
     }
 
-    const velocity = on ? 127 : 0;
-    this.sendLightMessage([
-      MidiMixSignalCode.BUTTON_PRESS,
-      control,
-      velocity,
-    ] as MidiMessage);
+    this.buttonLights[row][col] = on;
+    this.sendButtonLight(row, col, on);
   }
 
   setComboButtonLight(index: number, on: boolean) {
-    const control = CONTROL_IDs.comboButtons[index];
-    if (control === undefined) {
+    if (this.comboButtonLights[index] === undefined) {
       return;
     }
 
-    const velocity = on ? 127 : 0;
-    this.sendLightMessage([
-      MidiMixSignalCode.BUTTON_PRESS,
-      control,
-      velocity,
-    ] as MidiMessage);
+    this.comboButtonLights[index] = on;
+    this.sendComboButtonLight(index, on);
   }
 
   setBankButton(type: "right" | "left", on: boolean) {
-    const control =
-      type === "right"
-        ? CONTROL_IDs.bankRightButton
-        : CONTROL_IDs.bankLeftButton;
-
-    const velocity = on ? 127 : 0;
-    this.sendLightMessage([
-      MidiMixSignalCode.BUTTON_PRESS,
-      control,
-      velocity,
-    ] as MidiMessage);
+    this.bankButtonLights[type] = on;
+    this.sendBankButtonLight(type, on);
   }
 
   turnOffAllLights() {
