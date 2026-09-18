@@ -20,7 +20,6 @@
     "@types/midi": "^2.0.3",
     "@types/ws": "^8.5.10",
     "chaser": "^0.4.3",
-    "dotenv": "^16.4.5",
     "lodash": "^4.17.21",
     "midi": "^2.0.0",
     "openmeteo": "^1.1.3",
