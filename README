@@ -4,7 +4,9 @@ LStudio After Hours
 The default hightechmess app is now a BPM-based club lighting playground.
 Run `pnpm --filter @projects/hightechmess start` and open http://127.0.0.1:3210.
 Six scenes, editable16-step rhythms, four-color palettes, MIDI draft controls,
-saved sessions and synchronized onboard playback for up to four OctaCore towers.
+saved sessions and synchronized onboard playback for up to four
+[OctaCore](https://github.com/Alireza29675/OctaCore) towers. The companion OctaCore
+repository contains the ESP32 firmware and Wi-Fi setup instructions.
 Send & play uses the connected compatible towers; absent towers are optional.
 Tower IDs 1 and 2 retain compatibility with the current left/right boards.
 
