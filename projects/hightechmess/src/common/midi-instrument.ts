@@ -22,31 +22,35 @@ export class ExternalMidiInstrument {
 
   constructor(readonly listOfPossibleDevices: string[], readonly debuggerEnabled = false) {
     this.midiInput = new Input();
+    this.midiInput.on('message', (_, message) => this.handleMidiMessage(message));
     this.searchAndConnect();
     this.monitorConnection();
   }
 
   searchAndConnect() {
+    if (this.isConnected) return;
     for (let i = 0; i < this.midiInput.getPortCount(); i++) {
       const name = this.midiInput.getPortName(i);
       if (this.debuggerEnabled) {
         console.log(`🎹 Found device: ${name}`);
       }
       if (this.listOfPossibleDevices.find((device) => name.toLowerCase().includes(device.toLowerCase()))) {
-        this.midiInput.openPort(i);
+        try {
+          this.midiInput.openPort(i);
+        } catch {
+          return;
+        }
         this.isConnected = true;
         this.currentPortIndex = i;
         console.log(`🎹 Connected to instrument ${name}`);
-        this.midiInput.on('message', (_, message) => this.handleMidiMessage(message));
         return;
       }
     }
-    this.retryConnection();
   }
 
   handleMidiMessage(message: MidiMessage) {
-    const [status, control] = message;
-    const isPressed = status === PRESSED;
+    const [status, control, velocity] = message;
+    const isPressed = (status & 0xf0) === PRESSED && velocity > 0;
 
     switch(control) {
       case ControlCode.Kick:
@@ -62,31 +66,36 @@ export class ExternalMidiInstrument {
   }
 
   monitorConnection() {
+    if (this.connectionRetryIntervalId) return;
     const checkDeviceConnected = () => {
       let devicePresent = false;
       for (let i = 0; i < this.midiInput.getPortCount(); i++) {
-        if (this.listOfPossibleDevices.includes(this.midiInput.getPortName(i))) {
+        const name = this.midiInput.getPortName(i).toLowerCase();
+        if (this.listOfPossibleDevices.some(device => name.includes(device.toLowerCase()))) {
           devicePresent = true;
           break;
         }
       }
 
       if (!devicePresent) {
+        if (this.isConnected) this.midiInput.closePort();
         this.isConnected = false;
-        this.retryConnection();
+        this.currentPortIndex = null;
+        this.data.isKick = this.data.isSnare = this.data.isHiHat = false;
       }
+      if (!this.isConnected) this.searchAndConnect();
     };
-    setInterval(checkDeviceConnected, 3000);
+    this.connectionRetryIntervalId = setInterval(checkDeviceConnected, 3000);
   }
 
   retryConnection() {
-    if (this.connectionRetryIntervalId) {
-      clearInterval(this.connectionRetryIntervalId);
-    }
-    this.connectionRetryIntervalId = setInterval(() => {
-      if (!this.isConnected) {
-        this.searchAndConnect();
-      }
-    }, 3000);
+    this.monitorConnection();
+  }
+
+  close() {
+    if (this.connectionRetryIntervalId) clearInterval(this.connectionRetryIntervalId);
+    this.connectionRetryIntervalId = null;
+    this.midiInput.closePort();
+    this.isConnected = false;
   }
 }

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LStudio</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <span class="brand">LStudio</span>
+      <div class="connections" aria-label="Connections">
+        <span id="midi-status">MIDI</span><span id="tower-1-status">1</span><span id="tower-2-status">2</span
+        ><span id="tower-3-status">3</span><span id="tower-4-status">4</span>
+      </div>
+    </header>
+    <main>
+      <nav id="presets" class="presets" aria-label="Presets"></nav>
+      <section class="stage" aria-label="Strip preview">
+        <div class="stage-top">
+          <span id="beat-label" aria-label="Beat">1</span>
+          <button id="preview-toggle" class="quiet" aria-pressed="true">Pause preview</button>
+        </div>
+        <canvas
+          id="stage"
+          width="1200"
+          height="420"
+          tabindex="0"
+          aria-label="Connected LED towers. Drag to position; select a tower and use arrow keys to move it."
+        ></canvas>
+        <div class="rotations" aria-label="Tower rotation">
+          <div class="rotation" id="tower-1-layout" hidden>
+            <label for="rotation-1">1</label>
+            <input
+              id="rotation-1-range"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value="24"
+              aria-label="Tower 1 rotation slider"
+            />
+            <input
+              id="rotation-1"
+              type="number"
+              min="-180"
+              max="180"
+              step="1"
+              value="24"
+              aria-label="Tower 1 rotation"
+            /><span>°</span>
+          </div>
+          <div class="rotation" id="tower-2-layout" hidden>
+            <label for="rotation-2">2</label>
+            <input
+              id="rotation-2-range"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value="-52"
+              aria-label="Tower 2 rotation slider"
+            />
+            <input
+              id="rotation-2"
+              type="number"
+              min="-180"
+              max="180"
+              step="1"
+              value="-52"
+              aria-label="Tower 2 rotation"
+            /><span>°</span>
+          </div>
+          <div class="rotation" id="tower-3-layout" hidden>
+            <label for="rotation-3">3</label>
+            <input
+              id="rotation-3-range"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value="24"
+              aria-label="Tower 3 rotation slider"
+            />
+            <input
+              id="rotation-3"
+              type="number"
+              min="-180"
+              max="180"
+              step="1"
+              value="24"
+              aria-label="Tower 3 rotation"
+            /><span>°</span>
+          </div>
+          <div class="rotation" id="tower-4-layout" hidden>
+            <label for="rotation-4">4</label>
+            <input
+              id="rotation-4-range"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value="-52"
+              aria-label="Tower 4 rotation slider"
+            />
+            <input
+              id="rotation-4"
+              type="number"
+              min="-180"
+              max="180"
+              step="1"
+              value="-52"
+              aria-label="Tower 4 rotation"
+            /><span>°</span>
+          </div>
+        </div>
+      </section>
+      <section class="transport" aria-label="Playback">
+        <label class="tempo" for="bpm"
+          >BPM<input id="bpm" type="number" min="40" max="240" step="0.01" value="128"
+        /></label>
+        <button id="tap" class="tap" title="Tap four beats or press T">Tap<span id="tap-count"></span></button>
+        <label class="division" for="division"
+          >Steps / beat<select id="division">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="4">4</option>
+          </select></label
+        >
+        <div class="transport-actions">
+          <button id="send" class="primary">Send & play</button>
+          <button id="stop" class="stop" aria-pressed="false">Hold blackout</button>
+          <button id="stop-persistent" class="quiet">Stop</button>
+        </div>
+      </section>
+      <section class="beat-clock" aria-label="Beat timing">
+        <label for="offset">Offset</label>
+        <input
+          id="offset"
+          type="range"
+          min="-250"
+          max="250"
+          step="1"
+          value="0"
+          aria-label="Beat offset in milliseconds"
+        />
+        <output id="offset-out" for="offset">0 ms</output>
+        <button id="offset-reset" class="quiet">Reset</button>
+        <span id="clock-status" role="status"></span>
+      </section>
+      <div class="status-line">
+        <span id="play-state">Stopped</span><span id="draft-label">Draft</span><span id="blackout-state"></span>
+      </div>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section class="sequencer" aria-label="Sequence">
+        <div class="sequence-tools">
+          <div id="paint-tools" class="paint-tools" aria-label="Paint"></div>
+          <div class="row">
+            <button id="clear" class="quiet">Clear</button><button id="shuffle" class="quiet">Randomize</button>
+          </div>
+        </div>
+        <div id="steps" class="steps" aria-label="Sixteen beat steps"></div>
+      </section>
+      <div class="design-panels">
+        <section class="palette" aria-label="Colors">
+          <div id="colors" class="colors"></div>
+          <div class="palette-picks">
+            <button data-palette="acid">Acid</button><button data-palette="velvet">Velvet</button
+            ><button data-palette="heat">Heat</button><button data-palette="ice">Ice</button>
+          </div>
+        </section>
+        <section class="sliders" aria-label="Effect settings">
+          <label for="brightness"
+            >Intensity <output id="brightness-out"></output
+            ><input id="brightness" type="range" min="0" max="255" value="64"
+          /></label>
+          <label for="duty"
+            >Gate <output id="duty-out"></output><input id="duty" type="range" min="1" max="100" value="70"
+          /></label>
+          <label for="motion"
+            >Motion <output id="motion-out"></output><input id="motion" type="range" min="1" max="16" value="4"
+          /></label>
+          <label for="dash"
+            >Width <output id="dash-out"></output><input id="dash" type="range" min="1" max="15" value="4"
+          /></label>
+        </section>
+      </div>
+      <details class="library">
+        <summary>Sessions</summary>
+        <div class="session-controls">
+          <div class="row">
+            <input id="scene-name" maxlength="40" placeholder="Name" aria-label="Session name" /><button id="save">
+              Save
+            </button>
+          </div>
+          <select id="saved" aria-label="Saved sessions">
+            <option value="">Load…</option>
+          </select>
+          <div class="row">
+            <button id="export" class="quiet">Export</button><button id="import" class="quiet">Import</button
+            ><button id="delete" class="quiet">Delete</button
+            ><input id="file" type="file" accept="application/json,.json" hidden />
+          </div>
+        </div>
+      </details>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

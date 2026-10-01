@@ -1,6 +1,27 @@
-# How to run
+LStudio After Hours
+===================
 
-1. Install [pnpm](https://pnpm.io/)
-2. Run `pnpm install`
-3. Run `pnpm dev` and keep it running
-4. Change directory to `projects/[project-name]` and run `pnpm start` to start the project
+The default hightechmess app is now a BPM-based club lighting playground.
+Run `pnpm --filter @projects/hightechmess start` and open http://127.0.0.1:3210.
+Six scenes, editable16-step rhythms, four-color palettes, MIDI draft controls,
+saved sessions and synchronized onboard playback for up to four OctaCore towers.
+Send & play uses the connected compatible towers; absent towers are optional.
+Tower IDs 1 and 2 retain compatibility with the current left/right boards.
+
+See docs/CONTROLS.md and docs/RUNBOOK.md. Old frame streaming remains available
+with start:legacy for recovery; it is no longer the default.
+
+# lstudio
+
+MIDI Mix lighting controller for two OctaCore ESP32 boards:
+
+- Left: `ws://octacore-left.local:81` (virtual strip 0)
+- Right: `ws://octacore-right.local:81` (virtual strip 1)
+
+The four-strip virtual model remains intact for existing presets. Only the first
+two strips are transmitted. Servo commands are disabled in the active output.
+MIDI mappings and per-preset brightness behavior are retained.
+
+See [the local runbook](docs/RUNBOOK.md) for installation, hardware-free checks,
+startup, IP overrides, and recovery. Wi-Fi credentials belong in the paired
+OctaCore firmware's private configuration, not in this repository.

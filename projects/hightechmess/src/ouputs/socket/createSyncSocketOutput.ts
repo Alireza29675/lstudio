@@ -1,14 +1,25 @@
 import { OctaCoreOutput } from ".";
-import { MidiConnectedClock } from "../../clock";
-import { OctaCoreProject } from "../../project";
+import type { MidiConnectedClock } from "../../clock";
+import type { OctaCoreProject } from "../../project";
 
-export const createSyncedSocketOutput = async (project: OctaCoreProject, clock: MidiConnectedClock, addresses: string[]) => {
-  const ready = addresses.map((address, i) => {
-    const output = new OctaCoreOutput({ project, clock, url: address, stripIndex: i });
-    return output.waitToGetReady;
+export const createSyncedSocketOutput = (project: OctaCoreProject, clock: MidiConnectedClock, addresses: string[]) => {
+  const outputs = addresses.map((url, stripIndex) =>
+    new OctaCoreOutput({ project, clock, url, stripIndex, subscribeToClock: false })
+  );
+
+  // Advance the shared animation once, then render the same frame on each board.
+  const unsubscribe = clock.subscribe(data => {
+    project.tick(data);
+    outputs.forEach(output => output.render(project.state));
   });
 
-  await Promise.all(ready);
-
   clock.start();
-}
+  let stopped = false;
+  return () => {
+    if (stopped) return;
+    stopped = true;
+    clock.stop();
+    unsubscribe();
+    outputs.forEach(output => output.close());
+  };
+};

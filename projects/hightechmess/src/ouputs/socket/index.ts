@@ -1,13 +1,11 @@
 import WebSocket from 'ws';
-import { Ouput, Project, Clock } from "@lstudio/core";
-import { State } from "../../state";
-import { ClockPayload } from "../../clock";
+import type { Project, Clock } from "@lstudio/core";
+import type { State } from "../../state";
+import type { ClockPayload } from "../../clock";
 
 import { setColorPalette } from './commands/setColorPallete';
 import { setLedColors } from './commands/setLedColors';
-import { rotateServo } from './commands/rotateServo';
 import { setLedBrightness } from './commands/setLedBrightness';
-// import { fillLeds } from './commands/fillLeds';
 
 type SocketOutputConstructorArgs = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,114 +13,116 @@ type SocketOutputConstructorArgs = {
   clock: Clock<ClockPayload>,
   url: string,
   stripIndex: number,
+  subscribeToClock?: boolean,
 }
 
-const memoizeAndTriggerOnChange = <T>() => {
-  let lastValue: string | null = null;
-
-  return (value: T, callback: (value: T) => void) => {
-    const serializedValue = JSON.stringify(value);
-    if (lastValue !== serializedValue) {
-      lastValue = serializedValue;
-      callback(value);
-    }
-  };
-}
-
-export class OctaCoreOutput extends Ouput<ClockPayload, State> {
+export class OctaCoreOutput {
   private ws: WebSocket | null = null;
-  private url: string;
-  private ready: boolean = false;
-  private stripIndex: number;
-  
+  private reconnectTimer?: NodeJS.Timeout;
+  private heartbeatTimer?: NodeJS.Timeout;
+  private awaitingPong = false;
+  private closed = false;
+  private unsubscribe?: () => void;
+  private lastPalette?: Buffer;
+  private lastLeds?: Buffer;
+  private lastBrightness?: Buffer;
   private markAsReady: () => void = () => {};
   readonly waitToGetReady: Promise<void>;
 
-  private currentPalette: State['palette'] = [];
-
-  private paletteTrigger = memoizeAndTriggerOnChange<State['palette']>();
-  private ledsTrigger = memoizeAndTriggerOnChange<State['strips'][number]['leds']>();
-  private rotationTrigger = memoizeAndTriggerOnChange<State['strips'][number]['rotation']>();
-  private brightnessTrigger = memoizeAndTriggerOnChange<number>();
-
-  constructor({ project, clock, url, stripIndex }: SocketOutputConstructorArgs) {
-    super(project, clock);
-    this.url = url;
-    this.stripIndex = stripIndex;
-
-    this.waitToGetReady = new Promise((resolve) => this.markAsReady = resolve);
-
+  constructor(private readonly options: SocketOutputConstructorArgs) {
+    this.waitToGetReady = new Promise(resolve => this.markAsReady = resolve);
+    if (options.subscribeToClock !== false) {
+      this.unsubscribe = options.clock.subscribe(data => {
+        options.project.tick(data);
+        this.render(options.project.state);
+      });
+    }
     this.connect();
   }
 
-  connect() {
+  private scheduleReconnect() {
+    if (!this.closed && !this.reconnectTimer) {
+      this.reconnectTimer = setTimeout(() => {
+        this.reconnectTimer = undefined;
+        this.connect();
+      }, 3000);
+    }
+  }
+
+  private connect() {
+    if (this.closed) return;
+    let ws: WebSocket;
     try {
-      this.ws = new WebSocket(this.url);
-    } catch (e) {
-      setTimeout(() => this.connect(), 3000);
+      ws = new WebSocket(this.options.url, { handshakeTimeout: 5000 });
+    } catch {
+      this.scheduleReconnect();
       return;
     }
-
-    this.ws.on('open', () => {
-      this.ready = true;
+    this.ws = ws;
+    ws.on('open', () => {
+      this.awaitingPong = false;
+      this.heartbeatTimer = setInterval(() => this.checkHeartbeat(), 10000);
+      // A rebooted board has lost all state, even if the animation is unchanged.
+      this.lastPalette = this.lastLeds = this.lastBrightness = undefined;
+      this.render(this.options.project.state);
       this.markAsReady();
-      this.send(setColorPalette(this.currentPalette));
-      console.log(`[Socket] Connected to ${this.url} ✅`);
+      console.log(`[Socket] Connected to ${this.options.url} ✅`);
     });
-
-    this.ws.on('error', (error) => {
+    ws.on('error', error => {
       console.error(`[Socket] ${error.message} ❌`);
-      // this.ready = false;
     });
-
-    this.ws.on('close', () => {
-      this.ready = false;
-      console.log(`[Socket] Disconnected from ${this.url} ❌`);
-      setTimeout(() => this.connect(), 3000);
+    ws.on('pong', () => { this.awaitingPong = false; });
+    ws.on('close', () => {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = undefined;
+      console.log(`[Socket] Disconnected from ${this.options.url} ❌`);
+      this.scheduleReconnect();
     });
   }
 
-  send(data: Buffer) {
-    if (!this.ready) return;
-    this.ws?.send(data);
+  private checkHeartbeat() {
+    if (this.ws?.readyState !== WebSocket.OPEN) return;
+    if (this.awaitingPong) {
+      this.ws.terminate();
+      return;
+    }
+    this.awaitingPong = true;
+    this.ws.ping();
   }
 
-  setPalette = (palette: State['palette']) => {
-    this.currentPalette = palette;
-    this.send(setColorPalette(palette));
+  close() {
+    if (this.closed) return;
+    this.closed = true;
+    clearTimeout(this.reconnectTimer);
+    clearInterval(this.heartbeatTimer);
+    this.unsubscribe?.();
+    this.ws?.terminate();
   }
 
-  setLeds = (leds: State['strips'][number]['leds']) => {
-    // check if all leds are the same
-    // if (leds.every((led, _, arr) => arr[0] === led)) {
-    //   return this.send(fillLeds(leds[0]));
-    // }
-    
-    const colorIndices = leds.map(led => {
-      const colorIndex = this.currentPalette.indexOf(led)
-      
-      if (colorIndex === -1) {
-        console.log(this.stripIndex, this.currentPalette)
-        throw new Error(`Color ${led.toString()} not found in palette`);
-      }
-
-      return colorIndex;
-    });
-    this.send(setLedColors(colorIndices));
-  }
-
-  setRotation = (rotation: State['strips'][number]['rotation']) => {
-    this.send(rotateServo(rotation));
-  }
-
-  setBrightness = (brightness: number) => {
-    this.send(setLedBrightness(brightness));
-  }
-  
   render(state: State): void {
-    this.paletteTrigger(state.palette, this.setPalette);
-    this.ledsTrigger(state.strips[this.stripIndex].leds, this.setLeds);
-    this.rotationTrigger(state.strips[this.stripIndex].rotation, this.setRotation);
-    this.brightnessTrigger(state.strips[this.stripIndex].brightness, this.setBrightness);
+    if (this.ws?.readyState !== WebSocket.OPEN) return;
+    const strip = state.strips[this.options.stripIndex];
+    const palette = setColorPalette(state.palette);
+    const leds = setLedColors(strip.leds.map(led => {
+      const index = state.palette.indexOf(led);
+      if (index === -1) throw new Error(`Color ${led.toString()} not found in palette`);
+      return index;
+    }));
+    const brightness = setLedBrightness(strip.brightness);
+
+    const paletteChanged = !this.lastPalette?.equals(palette);
+    if (paletteChanged) {
+      this.ws.send(palette);
+      this.lastPalette = palette;
+    }
+    // Restore brightness before pixels so a reboot cannot display at a stale level.
+    if (!this.lastBrightness?.equals(brightness)) {
+      this.ws.send(brightness);
+      this.lastBrightness = brightness;
+    }
+    if (paletteChanged || !this.lastLeds?.equals(leds)) {
+      this.ws.send(leds);
+      this.lastLeds = leds;
+    }
   }
 }

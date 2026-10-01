@@ -2,6 +2,7 @@ import { Input, MidiMessage, Output } from 'midi';
 import { mkdirSync, readFileSync, writeFile } from 'fs';
 import { resolve } from 'path';
 import { throttle } from 'lodash';
+import { performance } from 'perf_hooks';
 
 enum MidiMixSignalCode {
   BUTTON_PRESS = 144,
@@ -13,8 +14,6 @@ interface ControlPosition {
   row: number;
   col: number;
 }
-
-const MAX_CONNECTION_RETRIES = Infinity;
 
 interface ControlIDs {
   knobs: number[][];
@@ -45,6 +44,10 @@ const CONTROL_IDs: ControlIDs = {
   soloButton: 27,
 };
 
+// SEND ALL transmits a snapshot, not a dedicated note. Require every known
+// continuous control within one short burst; ordinary knob moves cannot trigger it.
+const snapshotControls = new Set([...CONTROL_IDs.knobs.flat(), ...CONTROL_IDs.faders, CONTROL_IDs.masterFader]);
+
 type ControlState = {
   knobs: number[][];
   buttons: boolean[][];
@@ -67,11 +70,14 @@ const currentCache = (() => {
   }
 })()
 
-class MidiMixController {
+export class MidiMixController {
   private midiName: string = 'MIDI Mix';
   private midiInput: Input = new Input();
   private midiOutput: Output = new Output();
-  private isConnected: boolean = false;
+  private inputConnected = false;
+  private outputConnected = false;
+  private connectionTimer: NodeJS.Timeout;
+  private desiredLights = new Map<number, MidiMessage>();
   public readonly state: ControlState;
 
   private comboButtonListeners: ((index: number, pressed: boolean) => void)[] = [];
@@ -79,10 +85,20 @@ class MidiMixController {
   private soloButtonListeners: ((pressed: boolean) => void)[] = [];
   private bankRightButtonListeners: ((pressed: boolean) => void)[] = [];
   private bankLeftButtonListeners: ((pressed: boolean) => void)[] = [];
+  private sendAllListeners: (() => void)[] = [];
+  private snapshotSeen = new Map<number, number>();
+  private snapshotTimer?: NodeJS.Timeout;
+
+  get connected(): boolean { return this.inputConnected; }
 
   constructor() {
     this.state = currentCache || this.initializeState();
+    this.midiInput.on('message', (_, message) => {
+      const [signalCode, control, value] = message;
+      this.updateState(signalCode, control, value);
+    });
     this.connect();
+    this.connectionTimer = setInterval(() => this.connect(), 3000);
   }
 
   private initializeState(): ControlState {
@@ -98,31 +114,52 @@ class MidiMixController {
     };
   }
 
-  private connect(retryCount = 0) {
-    // Optimized to reduce redundancy and improve readability
-    this.tryConnectDevice(this.midiInput, 'Input');
-    this.tryConnectDevice(this.midiOutput, 'Output');
-
-    if (!this.isConnected && retryCount < MAX_CONNECTION_RETRIES) {
-      console.log('AKAI MidiMix not found. Retrying...');
-      setTimeout(() => this.connect(retryCount + 1), 3000);
+  private connect() {
+    const wasInputConnected = this.inputConnected;
+    this.inputConnected = this.tryConnectDevice(this.midiInput, 'Input', this.inputConnected);
+    if (this.inputConnected !== wasInputConnected) this.snapshotSeen.clear();
+    const wasOutputConnected = this.outputConnected;
+    this.outputConnected = this.tryConnectDevice(this.midiOutput, 'Output', this.outputConnected);
+    if (this.outputConnected && !wasOutputConnected) {
+      this.desiredLights.forEach(message => this.sendLight(message));
     }
-
-    this.midiInput.on('message', (_, message) => {
-      const [signalCode, control, value] = message;
-      this.updateState(signalCode, control, value);
-    });
   }
 
-  private tryConnectDevice(device: Input | Output, type: string) {
-    const portCount = device.getPortCount();
-    for (let i = 0; i < portCount; i++) {
-      if (device.getPortName(i).includes(this.midiName)) {
-        device.openPort(i);
-        this.isConnected = true;
-        console.log(`🎛️ Connected to AKAI MidiMix ${type}`);
-        break;
+  private tryConnectDevice(device: Input | Output, type: string, connected: boolean): boolean {
+    try {
+      for (let i = 0; i < device.getPortCount(); i++) {
+        if (device.getPortName(i).toLowerCase().includes(this.midiName.toLowerCase())) {
+          if (!connected) {
+            device.openPort(i);
+            console.log(`🎛️ Connected to AKAI MidiMix ${type}`);
+          }
+          return true;
+        }
       }
+    } catch {
+      console.error(`Could not connect to AKAI MidiMix ${type}; retrying.`);
+    }
+    if (connected) device.closePort();
+    return false;
+  }
+
+  close() {
+    clearInterval(this.connectionTimer);
+    clearTimeout(this.snapshotTimer);
+    this.saveState.cancel();
+    this.midiInput.closePort();
+    this.midiOutput.closePort();
+    this.inputConnected = this.outputConnected = false;
+  }
+
+  private sendLight(message: MidiMessage) {
+    this.desiredLights.set(message[1], message);
+    if (!this.outputConnected) return;
+    try {
+      this.midiOutput.sendMessage(message);
+    } catch {
+      this.midiOutput.closePort();
+      this.outputConnected = false;
     }
   }
 
@@ -130,16 +167,38 @@ class MidiMixController {
     switch (signalCode) {
       case MidiMixSignalCode.BUTTON_PRESS:
       case MidiMixSignalCode.BUTTON_RELEASE:
-        this.updateButtonState(control, signalCode === MidiMixSignalCode.BUTTON_PRESS);
+        this.updateButtonState(control, signalCode === MidiMixSignalCode.BUTTON_PRESS && value > 0);
         break;
       case MidiMixSignalCode.KNOB:
         this.updateKnobState(control, value);
+        this.trackSnapshot(control);
         break;
     }
 
     this.saveState();
   }
 
+
+  private trackSnapshot(control: number) {
+    if (!snapshotControls.has(control)) return;
+    const now = performance.now();
+    for (const [id, seenAt] of this.snapshotSeen) {
+      if (now - seenAt > 250) this.snapshotSeen.delete(id);
+    }
+    this.snapshotSeen.set(control, now);
+    clearTimeout(this.snapshotTimer);
+    if (this.snapshotSeen.size === snapshotControls.size) {
+      // Let the burst finish so a recent ordinary move cannot make us emit
+      // before that same control's final snapshot value arrives.
+      this.snapshotTimer = setTimeout(() => {
+        if (!this.inputConnected || this.snapshotSeen.size !== snapshotControls.size) return;
+        this.snapshotSeen.clear();
+        this.sendAllListeners.forEach(listener => listener());
+      }, 8);
+    }
+  }
+
+  onSendAll(listener: () => void) { this.sendAllListeners.push(listener); }
 
   private findControlPosition(control: number, controlIDs: number[][]): ControlPosition | null {
     for (let row = 0; row < controlIDs.length; row++) {
@@ -242,21 +301,21 @@ class MidiMixController {
     const velocity = on ? 127 : 0; // Full velocity for on, 0 for off
     const control = CONTROL_IDs.buttons[row][col];
     const noteOnMessage = [MidiMixSignalCode.BUTTON_PRESS, control, velocity] as MidiMessage
-    this.midiOutput.sendMessage(noteOnMessage);
+    this.sendLight(noteOnMessage);
   }
 
   setComboButtonLight(index: number, on: boolean) {
     const velocity = on ? 127 : 0;
     const control = CONTROL_IDs.comboButtons[index];
     const noteOnMessage = [MidiMixSignalCode.BUTTON_PRESS, control, velocity] as MidiMessage
-    this.midiOutput.sendMessage(noteOnMessage);
+    this.sendLight(noteOnMessage);
   }
 
   setBankButton(type: 'right' | 'left', on: boolean) {
     const velocity = on ? 127 : 0;
     const control = type === 'right' ? CONTROL_IDs.bankRightButton : CONTROL_IDs.bankLeftButton;
     const noteOnMessage = [MidiMixSignalCode.BUTTON_PRESS, control, velocity] as MidiMessage
-    this.midiOutput.sendMessage(noteOnMessage);
+    this.sendLight(noteOnMessage);
   }
 
   turnOffAllLights() {

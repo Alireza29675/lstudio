@@ -10,9 +10,12 @@
   ],
   "license": "MIT",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "start": "ts-node src/playground/server.ts",
+    "start:legacy": "ts-node src/index.ts",
+    "playground": "ts-node src/playground/server.ts",
+    "dev": "nodemon --exec ts-node src/playground/server.ts",
     "build": "rollup --config node:@lstudio/rollup-config --environment NODE_ENV:production",
+    "test": "node --test tests/*.test.cjs",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
     "typecheck": "tsc --noEmit"
   },

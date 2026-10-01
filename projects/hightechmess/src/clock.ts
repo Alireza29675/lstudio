@@ -36,6 +36,7 @@ export class MidiConnectedClock extends Clock<ClockPayload> {
   }
 
   public start(): void {
+    if (this.interval) return;
     const ms = Math.round(1000 / this.fps)
     this.interval = setInterval(() => {
       this.index++;
@@ -60,6 +61,7 @@ export class MidiConnectedClock extends Clock<ClockPayload> {
 
   public stop(): void {
     clearInterval(this.interval)
+    this.interval = undefined
   }
 }
 
